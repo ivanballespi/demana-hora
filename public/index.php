@@ -1,15 +1,11 @@
 <?php
-/**
- * demana-hora - Front Controller
- * Aquest fitxer gestiona totes les peticions de l'aplicació.
- */
+ //Aquest fitxer gestiona totes les peticions de l'aplicació.
 
-// 1. Inici de sessió i configuració d'errors (en producció posar a 0)
+// inici de sessió i configuració d'errors 
 session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// 2. Importació de fitxers de configuració i controladors
 require_once '../config/database.php';
 require_once '../controllers/ServiceController.php';
 require_once '../controllers/AuthController.php';
@@ -25,7 +21,7 @@ $authController = new AuthController();
 // 5. Sistema de rutes (Router)
 switch ($action) {
     
-    // --- Rutes d'Autenticació ---
+    // Rutes d'Autenticació
     case 'login':
         // Si ja està loguejat, el portem al dashboard
         if (isset($_SESSION['user_id'])) {
@@ -45,8 +41,8 @@ switch ($action) {
         break;
 
     case 'auth':
-        // Aquí cridaríem al mètode de login del AuthController
-        // (Lògica de verificació de credencials)
+        // aquí es on cridaríem al mètode de login del AuthController
+        // aqui va la llògica de verificació de credencials
         break;
 
     case 'logout':
@@ -54,7 +50,7 @@ switch ($action) {
         header("Location: index.php?action=login");
         break;
 
-    // --- Rutes de Negoci (Protegides) ---
+    // Rutes de Negoci (Protegides)
     case 'dashboard':
         // Verificació simple de seguretat
         if (!isset($_SESSION['user_id'])) {
@@ -80,7 +76,7 @@ switch ($action) {
         }
         break;
 
-    // --- Ruta per defecte (404) ---
+    // ruta per defecte 404
     default:
         http_response_code(404);
         echo "<h1>404 - Pàgina no trobada</h1>";
