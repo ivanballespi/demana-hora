@@ -1,41 +1,42 @@
 <?php
-require_once '../models/User.php';
+// FITXER: models/User.php
 
-class AuthController {
-    private $userModel;
+class User {
+    private $db;
 
     public function __construct() {
-        $this->userModel = new User();
+        // Obtenim la connexió des de la classe Database
+        $this->db = Database::getConnection();
     }
 
-    public function mostrarRegistre() {
-        require_once '../views/register.php';
+    // Funció per comprovar si l'email ja està registrat
+    public function emailExisteix($email) {
+        $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        return $stmt->fetch() ? true : false;
     }
 
-    public function processarRegistre() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Neteja de dades bàsica
-            $nom = htmlspecialchars(trim($_POST['nom']));
-            $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
-            $pass = $_POST['password'];
+    // Funció per inserir el nou usuari
+    public function registrar($nom, $email, $password) {
+        $hash = password_hash($password, PASSWORD_BCRYPT);
+        $sql = "INSERT INTO users (nom, email, password, rol) VALUES (:nom, :email, :password, 'client')";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':nom' => $nom,
+            ':email' => $email,
+            ':password' => $hash
+        ]);
+    }
 
-            // Validacions simples
-            if (empty($nom) || empty($email) || empty($pass)) {
-                header("Location: index.php?action=register&error=camps_buits");
-                exit;
-            }
+    // Funció per validar el login (la necessitaràs després)
+    public function validarLogin($email, $password) {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
 
-            if ($this->userModel->emailExisteix($email)) {
-                header("Location: index.php?action=register&error=email_duplicat");
-                exit;
-            }
-
-            // Intentar registre
-            if ($this->userModel->registrar($nom, $email, $pass)) {
-                header("Location: index.php?action=login&success=registre_ok");
-            } else {
-                header("Location: index.php?action=register&error=error_sistema");
-            }
+        if ($user && password_verify($password, $user['password'])) {
+            return $user;
         }
+        return false;
     }
 }
