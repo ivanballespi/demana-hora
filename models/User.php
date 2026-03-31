@@ -1,5 +1,4 @@
 <?php
-// FITXER: models/User.php
 
 class User {
     private $db;

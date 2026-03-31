@@ -12,7 +12,7 @@ require_once '../controllers/AuthController.php';
 
 // 3. Captura de l'acció de la URL (Ruteig simple)
 // Per defecte, si no hi ha acció, anem al 'dashboard' o al 'login'
-$action = isset($_GET['action']) ? $_GET['action'] : 'dashboard';
+$action = isset($_GET['action']) ? $_GET['action'] : 'register';
 
 // 4. Instància dels controladors
 $serviceController = new ServiceController();

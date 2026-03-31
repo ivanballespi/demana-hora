@@ -1,9 +1,9 @@
 <?php
 class Database {
     private static $host = 'localhost';
-    private static $db_name = 'servicemaster_db';
+    private static $db_name = 'demanahora_db';
     private static $username = 'root';
-    private static $password = ''; // Canviar segons la teva config
+    private static $password = ''; 
     private static $conn;
 
     public static function getConnection() {
