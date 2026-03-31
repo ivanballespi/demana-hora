@@ -10,6 +10,8 @@ require_once '../config/database.php';
 require_once '../controllers/ServiceController.php';
 require_once '../controllers/AuthController.php';
 
+$authController = new AuthController();
+$serviceController = new ServiceController();
 // captura de l'acció de la URL (Ruteig simple)
 // per defecte, si no hi ha acció, anem al 'register'
 $action = isset($_GET['action']) ? $_GET['action'] : 'register';
@@ -63,28 +65,24 @@ switch ($action) {
             exit;
         }
 
-        // 1. El controlador demana les dades al Model
-        $cites = $appointmentModel->getByUser($_SESSION['user_id']);
+        // el controlador demana les dades al Model
+        //$cites = $appointmentModel->getByUser($_SESSION['user_id']);
         $cites = []; // Temporalment buit fins que tinguis la consulta SQL
 
         // es crida a la vista. El fitxer dashboard.php "hereta" la variable $cites
         require_once '../views/dashboard.php';
         break;
 
+    case 'gestio_serveis':
+        $serviceController->llistar();
+        break;
+
     case 'crear_servei':
-        if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
-            $serviceController->guardar();
-        } else {
-            echo "Accés denegat: Només els administradors poden crear serveis.";
-        }
+        $serviceController->crear();
         break;
 
     case 'eliminar_servei':
-        if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
-            $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-            // Aquí cridaríem a un mètode del controlador per esborrar
-            header("Location: index.php?action=dashboard");
-        }
+        $serviceController->esborrar();
         break;
 
     // ruta per defecte 404

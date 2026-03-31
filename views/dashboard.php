@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | demana-hora</title>
-    <link rel="stylesheet" href="css/style.css"> <!-- El CSS que acabem de fer -->
+    <link rel="stylesheet" href="css/estil.css"> 
 </head>
 <body>
     <div class="dashboard-wrapper">
