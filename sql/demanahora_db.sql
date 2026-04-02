@@ -1,41 +1,62 @@
-CREATE DATABASE IF NOT EXISTS demanahora_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE demanahora_db;
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 02-04-2026 a las 12:38:51
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
--- Taula d'Usuaris
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    rol ENUM('admin', 'client') DEFAULT 'client',
-    creat_el TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
--- Taula de Serveis
-CREATE TABLE services (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    descripcio TEXT,
-    preu DECIMAL(10, 2) NOT NULL,
-    actiu BOOLEAN DEFAULT TRUE
-) ENGINE=InnoDB;
 
--- Taula de Cites
-CREATE TABLE appointments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    service_id INT NOT NULL,
-    data_cita DATETIME NOT NULL,
-    estat ENUM('pendent', 'confirmat', 'cancel·lat') DEFAULT 'pendent',
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
--- Dades d'exemple (Contrasenya: admin123 i client123)
-INSERT INTO users (nom, email, password, rol) VALUES 
-('Admin Principal', 'admin@service.cat', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin'),
-('Joan Client', 'joan@correu.cat', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'client');
+--
+-- Base de datos: `demanahora_db`
+--
 
-INSERT INTO services (nom, descripcio, preu) VALUES 
-('Consultoria Tècnica', 'Sessió d''una hora d''assessorament especialitzat.', 75.00),
-('Manteniment Web', 'Revisió mensual de seguretat i actualitzacions.', 120.00);
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `services`
+--
+
+CREATE TABLE `services` (
+  `id` int(11) NOT NULL,
+  `nom` varchar(100) NOT NULL,
+  `descripcio` text DEFAULT NULL,
+  `preu` decimal(10,2) NOT NULL,
+  `actiu` tinyint(1) DEFAULT 1,
+  `durada` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `services`
+--
+ALTER TABLE `services`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `services`
+--
+ALTER TABLE `services`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
