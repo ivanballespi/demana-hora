@@ -1,0 +1,4 @@
+:HL["/_next/static/chunks/15pi1c5o-8q2b.css","style"]
+2:[["children",{"s":"__PAGE__","h":160}]]
+1:[["children",{"s":{"n":"tool","t":"d","k":"calculadora-margen-beneficio","s":["ads.txt","aviso-legal","categoria","contacto","cuanto-falta-para","privacidad","sobre-nosotros","sueldo-neto"]},"h":65632,"c":"$Q2"}]]
+0:{"b":"daOycaTixK-KQg0jjnYSP","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
