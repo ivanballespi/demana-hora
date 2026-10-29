@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /
+
+Sitemap: https://ivanballespi.github.io/demana-hora/sitemap.xml
