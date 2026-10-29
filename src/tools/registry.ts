@@ -38,6 +38,9 @@ export const ICONS: Record<string, string> = {
   "calculadora-prestamo": "💳", "tin-tae": "🏛", "vacaciones-proporcionales": "🏖️", "horas-entre-dos-horas": "🕘",
   "calculadora-ritmo-running": "🏃", "edad-perro-gato-anos-humanos": "🐶",
   "calculadora-sueldo-neto": "💼", "calculadora-finiquito": "📄", "detector-texto-ia": "🤖",
+  "calculadora-factura-autonomo": "🧾", "calculadora-margen-beneficio": "📈", "calculadora-consumo-electrico": "💡",
+  "calculadora-ahorro": "🐷", "dividir-cuenta": "🍽️", "conversor-horas-minutos": "⏲️", "calculadora-calorias": "🥗",
+  "calculadora-raiz-cuadrada": "√", "velocidad-distancia-tiempo": "🚗", "generador-codigo-qr": "🔳",
 };
 
 /** Les que surten destacades a la portada. */
@@ -836,6 +839,203 @@ export const TOOLS: ToolMeta[] = [
       ["¿Es fiable este detector?", "Es orientativo. Ningún detector puede asegurar si un texto está escrito con IA: tómalo como una pista, no como una prueba."],
       ["¿Se guarda o se envía mi texto?", "No. El análisis se hace en tu navegador y el texto no sale de tu dispositivo."],
       ["¿Cómo hago que un texto suene menos a IA?", "Varía la longitud de las frases, quita las fórmulas hechas («es importante destacar», «en conclusión»), añade ejemplos concretos y tu opinión en primera persona."],
+    ],
+  },
+  {
+    slug: "calculadora-factura-autonomo",
+    category: "trabajo",
+    name: "Factura de autónomo",
+    title: "Calculadora de factura de autónomo: IVA y retención de IRPF",
+    description: "Calcula el total de una factura de autónomo con IVA (21 %, 10 %, 4 %) y retención de IRPF (15 % o 7 %). También al revés: cuánto facturar para cobrar una cantidad.",
+    intro: "Pon la base imponible (o lo que quieres cobrar), el IVA y la retención de IRPF. Te damos cada línea de la factura y el total que te pagará el cliente.",
+    howTo: {
+      title: "Cómo se calcula una factura con IVA e IRPF",
+      body: [
+        "Total de la factura = base imponible + IVA − retención de IRPF. Con una base de 1.000 €, un IVA del 21 % (210 €) y una retención del 15 % (150 €), el total es de 1.060 €.",
+        "La retención del 15 % es la general para profesionales cuando facturan a empresas o a otros autónomos. Los nuevos autónomos pueden aplicar el 7 % durante el año de alta y los dos siguientes.",
+        "A los particulares no se les aplica retención. Tampoco a muchas actividades empresariales (por ejemplo, el comercio). Si dudas, consulta con tu gestoría.",
+      ],
+    },
+    faq: [
+      ["¿Cuándo tengo que poner retención de IRPF en la factura?", "Cuando eres profesional (actividad del epígrafe de profesionales) y facturas a una empresa o a otro autónomo. A particulares no se pone."],
+      ["¿Cuánto tengo que facturar para cobrar 1.000 €?", "Con IVA del 21 % y retención del 15 %, una base de 943,40 €: el cliente te paga 1.000 €. Usa la opción «Quiero cobrar» para calcularlo."],
+    ],
+  },
+  {
+    slug: "calculadora-margen-beneficio",
+    category: "dinero",
+    name: "Margen y precio de venta",
+    title: "Calculadora de margen de beneficio y precio de venta",
+    description: "Calcula el margen de beneficio de un producto, el markup sobre el coste o el precio de venta que necesitas para ganar un porcentaje concreto.",
+    intro: "Indica el coste y el precio de venta para ver tu margen, o el coste y el margen que quieres para saber a qué precio vender.",
+    howTo: {
+      title: "Margen y markup no son lo mismo",
+      body: [
+        "El margen se calcula sobre el precio de venta: (precio − coste) ÷ precio. Si compras a 60 € y vendes a 100 €, tu margen es del 40 %.",
+        "El markup se calcula sobre el coste: (precio − coste) ÷ coste. En el mismo ejemplo es del 66,7 %.",
+        "Para vender con un margen concreto: precio = coste ÷ (1 − margen). Para ganar un 40 % sobre un coste de 60 €, tienes que vender a 100 €, no a 84 €.",
+      ],
+    },
+    faq: [
+      ["¿Por qué sumar un 40 % al coste no me da un 40 % de margen?", "Porque el margen se mide sobre el precio de venta. 60 € + 40 % = 84 €, y el margen real es solo del 28,6 %."],
+      ["¿El margen incluye el IVA?", "No: calcula siempre el margen con precios sin IVA, porque el IVA no es tuyo, lo ingresas a Hacienda."],
+    ],
+  },
+  {
+    slug: "calculadora-consumo-electrico",
+    category: "dinero",
+    name: "Consumo eléctrico",
+    title: "Calculadora de consumo eléctrico: cuánto gasta un aparato",
+    description: "Calcula cuántos kWh consume un electrodoméstico y cuánto te cuesta al día, al mes y al año según su potencia, las horas de uso y el precio de la luz.",
+    intro: "Escribe la potencia del aparato (en vatios), cuántas horas lo usas y el precio del kWh de tu factura. Te decimos cuánto te cuesta.",
+    howTo: {
+      title: "Cómo calcular el consumo de un aparato",
+      body: [
+        "Consumo (kWh) = potencia (W) × horas de uso ÷ 1.000. Un radiador de 2.000 W encendido 1 hora al día consume 2 kWh al día y 60 kWh al mes.",
+        "Coste = kWh × precio del kWh. A 0,15 €/kWh, esos 60 kWh son 9 € al mes. El precio del kWh lo encontrarás en tu factura (término de energía).",
+        "La potencia suele estar en la etiqueta del aparato. Los que tienen termostato (neveras, radiadores) no funcionan a plena potencia todo el rato, así que el consumo real puede ser menor.",
+      ],
+    },
+    faq: [
+      ["¿Cuánto gasta un aire acondicionado?", "Uno de 1.000 W durante 8 horas consume 8 kWh al día: a 0,15 €/kWh, 1,20 € al día o unos 36 € al mes."],
+      ["¿Qué precio del kWh pongo?", "El de tu factura (término de energía). Si tienes discriminación horaria, usa el del periodo en que usas el aparato."],
+    ],
+  },
+  {
+    slug: "calculadora-ahorro",
+    category: "dinero",
+    name: "Calculadora de ahorro",
+    title: "Calculadora de ahorro: cuánto ahorrar al mes para tu objetivo",
+    description: "Calcula cuánto tienes que ahorrar cada mes para llegar a una cantidad en una fecha: un viaje, la entrada de un piso o un fondo de emergencia.",
+    intro: "Dinos cuánto quieres reunir, en cuántos meses y lo que ya tienes ahorrado. Si lo vas a tener en una cuenta remunerada, añade la rentabilidad.",
+    howTo: {
+      title: "Cómo se calcula",
+      body: [
+        "Sin intereses, es una división: para reunir 12.000 € en 24 meses hay que ahorrar 500 € al mes; si ya tienes 2.400 €, bastan 400 € al mes.",
+        "Si el dinero está en una cuenta remunerada o un depósito, los intereses ayudan y la aportación mensual baja un poco. La calculadora usa capitalización mensual.",
+        "Un consejo clásico: programa una transferencia automática a una cuenta aparte el mismo día que cobras.",
+      ],
+    },
+    faq: [
+      ["¿Cuánto debería tener en el fondo de emergencia?", "Lo habitual es recomendar entre 3 y 6 meses de gastos fijos."],
+      ["¿Tiene en cuenta los impuestos de los intereses?", "No. Los intereses tributan en el IRPF, así que el resultado real puede ser algo menor."],
+    ],
+  },
+  {
+    slug: "dividir-cuenta",
+    category: "dinero",
+    name: "Dividir la cuenta",
+    title: "Dividir la cuenta entre amigos (con propina)",
+    description: "Divide la cuenta del restaurante entre varias personas y añade la propina que quieras. Rápido y sin calculadora.",
+    intro: "Pon el total de la cuenta, cuántos sois y, si queréis, el porcentaje de propina. Te decimos cuánto paga cada uno.",
+    howTo: {
+      title: "Cómo repartir la cuenta",
+      body: [
+        "Se suma la propina al total y se divide entre las personas. 90 € con un 10 % de propina son 99 €: entre 4, 24,75 € cada uno.",
+        "En España la propina es voluntaria; lo habitual es dejar el redondeo o entre un 5 y un 10 % si el servicio ha sido bueno.",
+      ],
+    },
+    faq: [
+      ["¿Es obligatorio dejar propina en España?", "No. Es voluntaria y el servicio ya está incluido en el precio."],
+    ],
+  },
+  {
+    slug: "conversor-horas-minutos",
+    category: "fechas",
+    name: "Minutos a horas",
+    title: "Pasar minutos a horas (y a horas decimales)",
+    description: "Convierte minutos a horas y minutos, horas decimales a horas y minutos (2,5 h = 2:30) y al revés. Útil para nóminas, fichajes y facturas por horas.",
+    intro: "Escribe una cantidad en minutos, en horas decimales o en formato horas:minutos, y te la damos en los tres formatos.",
+    howTo: {
+      title: "Cómo se convierten",
+      body: [
+        "Minutos a horas: se divide entre 60. 150 minutos son 2 horas y 30 minutos (2:30), o 2,5 horas decimales.",
+        "Horas decimales a minutos: los decimales se multiplican por 60. 1,75 h son 1 hora y 45 minutos, no 1 hora y 75 minutos.",
+        "Las horas decimales son las que sirven para multiplicar por un precio por hora: 2:30 h a 20 €/h son 2,5 × 20 = 50 €.",
+      ],
+    },
+    faq: [
+      ["¿Cuánto es 0,5 horas?", "30 minutos."],
+      ["¿Cuántas horas son 90 minutos?", "1 hora y 30 minutos, o 1,5 horas."],
+    ],
+  },
+  {
+    slug: "calculadora-calorias",
+    category: "salud",
+    name: "Calorías diarias",
+    title: "Calculadora de calorías: cuántas calorías necesitas al día",
+    description: "Calcula tu metabolismo basal y las calorías que necesitas al día según tu edad, peso, altura y actividad física, para mantener, perder o ganar peso.",
+    intro: "Introduce tus datos y tu nivel de actividad. Te damos tu metabolismo basal y una estimación de las calorías diarias para mantener tu peso.",
+    howTo: {
+      title: "Cómo se calcula",
+      body: [
+        "Usamos la ecuación de Mifflin-St Jeor, una de las más precisas para adultos: hombres 10 × peso + 6,25 × altura − 5 × edad + 5; mujeres, lo mismo − 161.",
+        "El resultado (metabolismo basal) se multiplica por un factor de actividad, de 1,2 si eres sedentario a 1,9 si haces mucho ejercicio.",
+        "Para perder peso de forma sostenible se suele recomendar un déficit de unas 500 kcal al día. Es una estimación: un dietista-nutricionista puede ajustarla a tu caso.",
+      ],
+    },
+    faq: [
+      ["¿Cuántas calorías necesita un hombre de 30 años, 75 kg y 1,80 m?", "Su metabolismo basal es de unas 1.730 kcal y, con actividad moderada, necesita unas 2.680 kcal al día para mantener su peso."],
+      ["¿Es fiable?", "Es una buena aproximación para la mayoría de adultos, pero no sirve igual para embarazadas, deportistas de élite o personas con enfermedades metabólicas."],
+    ],
+  },
+  {
+    slug: "calculadora-raiz-cuadrada",
+    category: "estudios",
+    name: "Raíces y potencias",
+    title: "Calculadora de raíz cuadrada, cúbica y potencias",
+    description: "Calcula la raíz cuadrada, la raíz cúbica o cualquier raíz enésima de un número, y también potencias. Al instante y con decimales.",
+    intro: "Escribe un número y elige si quieres su raíz (cuadrada, cúbica o la que quieras) o elevarlo a una potencia.",
+    howTo: {
+      title: "Raíces y potencias",
+      body: [
+        "La raíz cuadrada de un número es el valor que, multiplicado por sí mismo, da ese número: √144 = 12 porque 12 × 12 = 144.",
+        "La raíz enésima es lo mismo que elevar a 1/n: la raíz cúbica de 27 es 27^(1/3) = 3.",
+        "Los números negativos no tienen raíz cuadrada real, pero sí raíz cúbica: la raíz cúbica de −27 es −3.",
+      ],
+    },
+    faq: [
+      ["¿Cuál es la raíz cuadrada de 2?", "1,41421356… Es un número irracional: tiene infinitos decimales sin repetición."],
+      ["¿Cuánto es 2 elevado a 10?", "1.024."],
+    ],
+  },
+  {
+    slug: "velocidad-distancia-tiempo",
+    category: "estudios",
+    name: "Velocidad, distancia y tiempo",
+    title: "Calculadora de velocidad, distancia y tiempo",
+    description: "Calcula la velocidad media, la distancia recorrida o el tiempo de un trayecto a partir de los otros dos datos. Para problemas de física y para planificar viajes.",
+    intro: "Elige qué quieres calcular e introduce los otros dos datos. Trabajamos en kilómetros, horas y km/h.",
+    howTo: {
+      title: "La fórmula",
+      body: [
+        "Velocidad = distancia ÷ tiempo. Si recorres 120 km en 1 hora y media, tu velocidad media es de 80 km/h.",
+        "Distancia = velocidad × tiempo, y tiempo = distancia ÷ velocidad: 300 km a 100 km/h son 3 horas.",
+        "Para pasar de km/h a m/s, divide entre 3,6.",
+      ],
+    },
+    faq: [
+      ["¿Cuánto se tarda en recorrer 500 km a 120 km/h?", "4 horas y 10 minutos, sin contar paradas."],
+    ],
+  },
+  {
+    slug: "generador-codigo-qr",
+    category: "utilidades",
+    name: "Generador de QR",
+    title: "Generador de códigos QR gratis (sin caducidad)",
+    description: "Crea un código QR gratis para una web, un texto, un teléfono, un WiFi o un correo. Sin registro, sin marcas de agua y sin caducidad. Descárgalo en PNG o SVG.",
+    intro: "Escribe el enlace o el texto y el código QR se genera al momento. Puedes descargarlo para imprimirlo o compartirlo.",
+    howTo: {
+      title: "Un QR que no caduca",
+      body: [
+        "Muchas webs crean QR «dinámicos» que pasan por sus servidores y dejan de funcionar si no pagas. Este QR es estático: el enlace va dentro del propio código y funcionará siempre.",
+        "Para un WiFi, el QR permite conectarse sin escribir la contraseña: elige la opción WiFi y escribe el nombre de la red y la clave.",
+        "Antes de imprimirlo, pruébalo con la cámara del móvil. Para imprimir en grande, descarga la versión SVG, que no pierde calidad.",
+      ],
+    },
+    faq: [
+      ["¿El código QR caduca?", "No. Es un QR estático: no depende de ningún servidor y funcionará mientras exista el enlace que contiene."],
+      ["¿Se guarda lo que escribo?", "No. El QR se genera en tu navegador."],
     ],
   },
 ];

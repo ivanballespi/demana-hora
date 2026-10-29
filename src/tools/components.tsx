@@ -1267,6 +1267,286 @@ function DetectorIA() {
   );
 }
 
+function FacturaAutonomo() {
+  const [modo, setModo] = useState<"base" | "neto">("base");
+  const [v, setV] = useState("1000");
+  const [iva, setIva] = useState("21");
+  const [irpf, setIrpf] = useState("15");
+  const r = L.facturaAutonomo(parse(v), Number(iva), Number(irpf), modo);
+  return (
+    <div className="space-y-4">
+      <Tabs value={modo} onChange={setModo} options={[["base", "Tengo la base"], ["neto", "Quiero cobrar"]]} />
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Field label={modo === "base" ? "Base imponible (€)" : "Quiero cobrar (€)"} value={v} onChange={(e) => setV(e.target.value)} inputMode="decimal" />
+        <label className="block"><span className="label">IVA</span>
+          <select className="input" value={iva} onChange={(e) => setIva(e.target.value)}>
+            <option value="21">21 %</option><option value="10">10 %</option><option value="4">4 %</option><option value="0">0 % (exento)</option>
+          </select>
+        </label>
+        <label className="block"><span className="label">Retención IRPF</span>
+          <select className="input" value={irpf} onChange={(e) => setIrpf(e.target.value)}>
+            <option value="15">15 % (general)</option><option value="7">7 % (nuevos autónomos)</option><option value="0">Sin retención</option>
+          </select>
+        </label>
+      </div>
+      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white text-sm tabular-nums">
+        {[["Base imponible", r.base, ""], [`IVA (${iva} %)`, r.cuotaIva, "+"], [`Retención IRPF (${irpf} %)`, r.retencion, "−"]].map(([l, n, s]) => (
+          <div key={l as string} className="flex justify-between border-b border-stone-100 px-4 py-2.5"><span>{s} {l}</span><b>{eur(n as number)}</b></div>
+        ))}
+        <div className="flex justify-between bg-brand-soft px-4 py-3 text-base"><span className="font-bold">Total a cobrar</span><b className="text-lg">{eur(r.total)}</b></div>
+      </div>
+    </div>
+  );
+}
+
+function MargenBeneficio() {
+  const [modo, setModo] = useState<"margen" | "precio">("margen");
+  const [coste, setCoste] = useState("60");
+  const [precio, setPrecio] = useState("100");
+  const [deseado, setDeseado] = useState("40");
+  const m = L.margen(parse(coste), parse(precio));
+  const pv = L.precioParaMargen(parse(coste), parse(deseado));
+  return (
+    <div className="space-y-4">
+      <Tabs value={modo} onChange={setModo} options={[["margen", "Calcular mi margen"], ["precio", "Calcular precio de venta"]]} />
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Coste (€, sin IVA)" value={coste} onChange={(e) => setCoste(e.target.value)} inputMode="decimal" />
+        {modo === "margen"
+          ? <Field label="Precio de venta (€, sin IVA)" value={precio} onChange={(e) => setPrecio(e.target.value)} inputMode="decimal" />
+          : <Field label="Margen que quieres (%)" value={deseado} onChange={(e) => setDeseado(e.target.value)} inputMode="decimal" />}
+      </div>
+      {modo === "margen" ? (
+        <>
+          <Big label="Margen sobre el precio de venta">{num(m.margen, 2)} %</Big>
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label="Beneficio por unidad" value={eur(m.beneficio)} />
+            <Stat label="Markup sobre el coste" value={`${num(m.markup, 2)} %`} />
+          </div>
+        </>
+      ) : (
+        <>
+          <Big label="Precio de venta sin IVA">{eur(pv)}</Big>
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label="Con IVA del 21 %" value={eur(pv * 1.21)} />
+            <Stat label="Beneficio por unidad" value={eur(pv - parse(coste))} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function ConsumoElectrico() {
+  const [w, setW] = useState("2000");
+  const [h, setH] = useState("1");
+  const [d, setD] = useState("30");
+  const [p, setP] = useState("0,15");
+  const r = L.consumoElectrico(parse(w), parse(h), parse(d), parse(p));
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Potencia del aparato (W)" value={w} onChange={(e) => setW(e.target.value)} inputMode="decimal" />
+        <Field label="Horas de uso al día" value={h} onChange={(e) => setH(e.target.value)} inputMode="decimal" />
+        <Field label="Días de uso al mes" value={d} onChange={(e) => setD(e.target.value)} inputMode="numeric" />
+        <Field label="Precio del kWh (€)" value={p} onChange={(e) => setP(e.target.value)} inputMode="decimal" />
+      </div>
+      <Big label="Coste al mes">{eur(r.costeMes)}</Big>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Stat label="Consumo al día" value={`${num(r.kwhDia)} kWh`} />
+        <Stat label="Consumo al mes" value={`${num(r.kwhMes)} kWh`} />
+        <Stat label="Coste al día" value={eur(r.costeDia)} />
+        <Stat label="Coste al año" value={eur(r.costeAño)} />
+      </div>
+    </div>
+  );
+}
+
+function Ahorro() {
+  const [obj, setObj] = useState("12000");
+  const [meses, setMeses] = useState("24");
+  const [ini, setIni] = useState("0");
+  const [int, setInt] = useState("0");
+  const n = parseInt(meses, 10);
+  const r = n > 0 ? L.ahorroMensual(parse(obj), n, parse(ini) || 0, parse(int) || 0) : NaN;
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Quiero reunir (€)" value={obj} onChange={(e) => setObj(e.target.value)} inputMode="decimal" />
+        <Field label="En cuántos meses" value={meses} onChange={(e) => setMeses(e.target.value)} inputMode="numeric" />
+        <Field label="Ya tengo ahorrado (€)" value={ini} onChange={(e) => setIni(e.target.value)} inputMode="decimal" />
+        <Field label="Rentabilidad anual (%) opcional" value={int} onChange={(e) => setInt(e.target.value)} inputMode="decimal" />
+      </div>
+      <Big label="Tienes que ahorrar al mes">{r === 0 ? "¡Ya lo tienes! 🎉" : eur(r)}</Big>
+      {Number.isFinite(r) && r > 0 && <Stat label="Al día, aproximadamente" value={eur((r * 12) / 365)} />}
+    </div>
+  );
+}
+
+function DividirCuenta() {
+  const [t, setT] = useState("90");
+  const [p, setP] = useState("4");
+  const [prop, setProp] = useState("0");
+  const r = L.dividirCuenta(parse(t), parseInt(p, 10) || 1, parse(prop) || 0);
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-3">
+        <Field label="Total (€)" value={t} onChange={(e) => setT(e.target.value)} inputMode="decimal" />
+        <Field label="Personas" value={p} onChange={(e) => setP(e.target.value)} inputMode="numeric" />
+        <Field label="Propina (%)" value={prop} onChange={(e) => setProp(e.target.value)} inputMode="decimal" />
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {["0", "5", "10", "15"].map((x) => <button key={x} type="button" className={`btn-ghost py-1.5 ${prop === x ? "border-brand text-brand" : ""}`} onClick={() => setProp(x)}>{x === "0" ? "Sin propina" : `${x} %`}</button>)}
+      </div>
+      <Big label="Paga cada uno">{eur(r.porPersona)}</Big>
+      {r.propina > 0 && <Stat label="Total con propina" value={`${eur(r.conPropina)} (propina ${eur(r.propina)})`} />}
+    </div>
+  );
+}
+
+function HorasMinutos() {
+  const [tipo, setTipo] = useState<"minutos" | "decimal" | "hhmm">("minutos");
+  const [v, setV] = useState("150");
+  const min = L.aMinutos(v, tipo);
+  const ok = Number.isFinite(min) && min >= 0;
+  return (
+    <div className="space-y-4">
+      <Tabs value={tipo} onChange={(t) => { setTipo(t); setV(t === "minutos" ? "150" : t === "decimal" ? "2,5" : "2:30"); }} options={[["minutos", "Desde minutos"], ["decimal", "Desde horas decimales"], ["hhmm", "Desde horas:minutos"]]} />
+      <Field label={tipo === "minutos" ? "Minutos" : tipo === "decimal" ? "Horas decimales (ej.: 2,5)" : "Horas y minutos (ej.: 2:30)"} value={v} onChange={(e) => setV(e.target.value)} inputMode="decimal" />
+      {ok ? (
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Big label="Horas y minutos">{L.minutosAHoras(Math.round(min))}</Big>
+          <Big label="Horas decimales">{num(min / 60, 4)} h</Big>
+          <Big label="Minutos">{num(min, 2)}</Big>
+        </div>
+      ) : <Big>Formato no válido</Big>}
+    </div>
+  );
+}
+
+function Calorias() {
+  const [sexo, setSexo] = useState<"hombre" | "mujer">("mujer");
+  const [edad, setEdad] = useState("30");
+  const [peso, setPeso] = useState("65");
+  const [alt, setAlt] = useState("165");
+  const [act, setAct] = useState("1.375");
+  const e = parse(edad), p = parse(peso), a = parse(alt);
+  const r = e > 0 && p > 0 && a > 0 ? L.calorias(sexo, e, p, a, Number(act)) : null;
+  return (
+    <div className="space-y-4">
+      <Tabs value={sexo} onChange={setSexo} options={[["mujer", "Mujer"], ["hombre", "Hombre"]]} />
+      <div className="grid grid-cols-3 gap-3">
+        <Field label="Edad" value={edad} onChange={(ev) => setEdad(ev.target.value)} inputMode="numeric" />
+        <Field label="Peso (kg)" value={peso} onChange={(ev) => setPeso(ev.target.value)} inputMode="decimal" />
+        <Field label="Altura (cm)" value={alt} onChange={(ev) => setAlt(ev.target.value)} inputMode="decimal" />
+      </div>
+      <label className="block"><span className="label">Actividad física</span>
+        <select className="input" value={act} onChange={(ev) => setAct(ev.target.value)}>
+          {L.ACTIVIDAD.map(([f, l]) => <option key={f} value={String(f)}>{l}</option>)}
+        </select>
+      </label>
+      {r && (
+        <>
+          <Big label="Calorías para mantener tu peso">{num(r.mantenimiento, 0)} kcal/día</Big>
+          <div className="grid grid-cols-3 gap-3">
+            <Stat label="Metabolismo basal" value={`${num(r.tmb, 0)} kcal`} />
+            <Stat label="Para perder peso" value={`${num(r.perder, 0)} kcal`} />
+            <Stat label="Para ganar peso" value={`${num(r.ganar, 0)} kcal`} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function RaizPotencia() {
+  const [modo, setModo] = useState<"raiz" | "potencia">("raiz");
+  const [x, setX] = useState("144");
+  const [n, setN] = useState("2");
+  const xv = parse(x), nv = parse(n);
+  const r = modo === "raiz" ? L.raiz(xv, nv) : Math.pow(xv, nv);
+  return (
+    <div className="space-y-4">
+      <Tabs value={modo} onChange={setModo} options={[["raiz", "Raíz"], ["potencia", "Potencia"]]} />
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Número" value={x} onChange={(e) => setX(e.target.value)} inputMode="decimal" />
+        <Field label={modo === "raiz" ? "Índice (2 = cuadrada, 3 = cúbica)" : "Exponente"} value={n} onChange={(e) => setN(e.target.value)} inputMode="decimal" />
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {modo === "raiz" ? <><button type="button" className="btn-ghost py-1.5" onClick={() => setN("2")}>Cuadrada</button><button type="button" className="btn-ghost py-1.5" onClick={() => setN("3")}>Cúbica</button></> : <><button type="button" className="btn-ghost py-1.5" onClick={() => setN("2")}>Al cuadrado</button><button type="button" className="btn-ghost py-1.5" onClick={() => setN("3")}>Al cubo</button></>}
+      </div>
+      <Big label="Resultado">{Number.isFinite(r) ? num(r, 10) : modo === "raiz" && xv < 0 ? "No tiene raíz real" : "—"}</Big>
+    </div>
+  );
+}
+
+function VelocidadDistanciaTiempo() {
+  const [calc, setCalc] = useState<"velocidad" | "distancia" | "tiempo">("velocidad");
+  const [a, setA] = useState("120");
+  const [b, setB] = useState("1,5");
+  const r = L.velocidadDistanciaTiempo(calc, parse(a), parse(b));
+  const labels = { velocidad: ["Distancia (km)", "Tiempo (horas)"], distancia: ["Velocidad (km/h)", "Tiempo (horas)"], tiempo: ["Distancia (km)", "Velocidad (km/h)"] }[calc];
+  return (
+    <div className="space-y-4">
+      <Tabs value={calc} onChange={setCalc} options={[["velocidad", "Velocidad"], ["distancia", "Distancia"], ["tiempo", "Tiempo"]]} />
+      <div className="grid grid-cols-2 gap-3">
+        <Field label={labels[0]} value={a} onChange={(e) => setA(e.target.value)} inputMode="decimal" />
+        <Field label={labels[1]} value={b} onChange={(e) => setB(e.target.value)} inputMode="decimal" />
+      </div>
+      {Number.isFinite(r) ? (
+        calc === "velocidad" ? <Big label="Velocidad media">{num(r, 2)} km/h <span className="text-base text-stone-500">({num(r / 3.6, 2)} m/s)</span></Big>
+        : calc === "distancia" ? <Big label="Distancia">{num(r, 2)} km</Big>
+        : <Big label="Tiempo">{L.minutosAHoras(Math.round(r * 60))} h <span className="text-base text-stone-500">({num(r, 2)} h)</span></Big>
+      ) : <Big>Revisa los datos</Big>}
+    </div>
+  );
+}
+
+function GeneradorQR() {
+  const [tipo, setTipo] = useState<"url" | "texto" | "wifi" | "tel">("url");
+  const [v, setV] = useState("https://calcularonline.es");
+  const [red, setRed] = useState("");
+  const [clave, setClave] = useState("");
+  const [qr, setQr] = useState<{ key: string; svg: string; png: string } | null>(null);
+  const esc = (s: string) => s.replace(/([\\;,:"])/g, "\\$1");
+  const contenido = tipo === "wifi" ? (red ? `WIFI:T:WPA;S:${esc(red)};P:${esc(clave)};;` : "") : tipo === "tel" ? (v ? `tel:${v.replace(/\s/g, "")}` : "") : v;
+  useEffect(() => {
+    if (!contenido) return;
+    let cancel = false;
+    import("qrcode").then(async (QR) => {
+      const opts = { margin: 2, errorCorrectionLevel: "M" as const };
+      const [s, p] = await Promise.all([QR.toString(contenido, { ...opts, type: "svg" }), QR.toDataURL(contenido, { ...opts, width: 1024 })]);
+      if (!cancel) setQr({ key: contenido, svg: s, png: p });
+    });
+    return () => { cancel = true; };
+  }, [contenido]);
+  const svg = contenido && qr?.key === contenido ? qr.svg : "";
+  const png = qr?.png ?? "";
+  return (
+    <div className="space-y-4">
+      <Tabs value={tipo} onChange={(t) => { setTipo(t); setV(t === "url" ? "https://" : ""); }} options={[["url", "Enlace"], ["texto", "Texto"], ["wifi", "WiFi"], ["tel", "Teléfono"]]} />
+      {tipo === "wifi" ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Nombre de la red (SSID)" value={red} onChange={(e) => setRed(e.target.value)} autoComplete="off" />
+          <Field label="Contraseña" value={clave} onChange={(e) => setClave(e.target.value)} autoComplete="off" />
+        </div>
+      ) : tipo === "texto" ? (
+        <label className="block"><span className="label">Texto</span><textarea className="input min-h-24" value={v} onChange={(e) => setV(e.target.value)} /></label>
+      ) : (
+        <Field label={tipo === "url" ? "Enlace (URL)" : "Número de teléfono"} value={v} onChange={(e) => setV(e.target.value)} inputMode={tipo === "tel" ? "tel" : "url"} autoComplete="off" />
+      )}
+      {svg ? (
+        <div className="flex flex-col items-center gap-4 rounded-2xl bg-white p-4">
+          <div className="w-56 max-w-full" dangerouslySetInnerHTML={{ __html: svg }} />
+          <div className="flex flex-wrap justify-center gap-2">
+            <a className="btn-primary" href={png} download="codigo-qr.png">Descargar PNG</a>
+            <a className="btn-ghost" href={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`} download="codigo-qr.svg">Descargar SVG</a>
+          </div>
+        </div>
+      ) : <Big>Escribe algo para generar el código QR</Big>}
+    </div>
+  );
+}
+
 export const TOOL_COMPONENTS: Record<string, () => React.ReactNode> = {
   "numeros-a-letras": NumerosALetras,
   "letra-dni": LetraDni,
@@ -1307,6 +1587,16 @@ export const TOOL_COMPONENTS: Record<string, () => React.ReactNode> = {
   "calculadora-sueldo-neto": () => <SueldoNeto />,
   "calculadora-finiquito": Finiquito,
   "detector-texto-ia": DetectorIA,
+  "calculadora-factura-autonomo": FacturaAutonomo,
+  "calculadora-margen-beneficio": MargenBeneficio,
+  "calculadora-consumo-electrico": ConsumoElectrico,
+  "calculadora-ahorro": Ahorro,
+  "dividir-cuenta": DividirCuenta,
+  "conversor-horas-minutos": HorasMinutos,
+  "calculadora-calorias": Calorias,
+  "calculadora-raiz-cuadrada": RaizPotencia,
+  "velocidad-distancia-tiempo": VelocidadDistanciaTiempo,
+  "generador-codigo-qr": GeneradorQR,
 };
 
 /** Calculadora de sou net per incrustar a les pàgines de sous concrets. */

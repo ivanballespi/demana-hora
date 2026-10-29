@@ -803,3 +803,89 @@ export function analizarIA(texto: string) {
   const porcentaje = Math.round(5 + bruto * 90); // mai 0 ni 100: no hi ha certeses
   return { porcentaje, palabras, frases: frases.length, señales, encontradas, suficiente: palabras >= 80 };
 }
+
+/* ---------- Factura de autónomo ---------- */
+
+export function facturaAutonomo(importe: number, iva: number, irpf: number, modo: "base" | "neto") {
+  // modo "neto": el importe es lo que quieres cobrar (base + IVA − IRPF)
+  const base = modo === "base" ? importe : importe / (1 + iva / 100 - irpf / 100);
+  const cuotaIva = (base * iva) / 100;
+  const retencion = (base * irpf) / 100;
+  return { base, cuotaIva, retencion, total: base + cuotaIva - retencion };
+}
+
+/* ---------- Margen y precio de venta ---------- */
+
+export function margen(coste: number, precio: number) {
+  return { beneficio: precio - coste, margen: precio ? ((precio - coste) / precio) * 100 : NaN, markup: coste ? ((precio - coste) / coste) * 100 : NaN };
+}
+/** Precio de venta para conseguir un margen sobre el precio (no sobre el coste). */
+export const precioParaMargen = (coste: number, margenPct: number) => (margenPct >= 100 ? NaN : coste / (1 - margenPct / 100));
+
+/* ---------- Consumo eléctrico ---------- */
+
+export function consumoElectrico(vatios: number, horasDia: number, diasMes: number, precioKwh: number) {
+  const kwhDia = (vatios * horasDia) / 1000;
+  const kwhMes = kwhDia * diasMes;
+  return { kwhDia, kwhMes, costeDia: kwhDia * precioKwh, costeMes: kwhMes * precioKwh, costeAño: kwhMes * precioKwh * 12 };
+}
+
+/* ---------- Ahorro ---------- */
+
+/** Aportación mensual necesaria para llegar a un objetivo (con rentabilidad opcional, capitalización mensual). */
+export function ahorroMensual(objetivo: number, meses: number, inicial = 0, interesAnual = 0) {
+  const r = interesAnual / 100 / 12;
+  const crece = Math.pow(1 + r, meses);
+  const falta = objetivo - inicial * crece;
+  if (falta <= 0) return 0;
+  return r === 0 ? falta / meses : (falta * r) / (crece - 1);
+}
+
+export function dividirCuenta(total: number, personas: number, propinaPct = 0) {
+  const conPropina = total * (1 + propinaPct / 100);
+  return { conPropina, propina: conPropina - total, porPersona: conPropina / Math.max(1, personas) };
+}
+
+/* ---------- Horas y minutos ---------- */
+
+/** "2:30", "2h30", "150" (minutos) o "2,5" (horas decimales) → minutos */
+export function aMinutos(valor: string, tipo: "minutos" | "decimal" | "hhmm"): number {
+  const v = valor.trim().replace(",", ".");
+  if (tipo === "minutos") return Number(v);
+  if (tipo === "decimal") return Number(v) * 60;
+  const m = v.match(/^(\d+)\s*[:h.]\s*(\d{1,2})$/i);
+  return m ? Number(m[1]) * 60 + Number(m[2]) : /^\d+$/.test(v) ? Number(v) * 60 : NaN;
+}
+
+/* ---------- Calorías (Mifflin-St Jeor) ---------- */
+
+export const ACTIVIDAD: [number, string][] = [
+  [1.2, "Sedentario (poco o nada de ejercicio)"],
+  [1.375, "Ligero (1-3 días de ejercicio por semana)"],
+  [1.55, "Moderado (3-5 días por semana)"],
+  [1.725, "Intenso (6-7 días por semana)"],
+  [1.9, "Muy intenso (trabajo físico o doble entrenamiento)"],
+];
+
+export function calorias(sexo: "hombre" | "mujer", edad: number, pesoKg: number, alturaCm: number, factor: number) {
+  const tmb = 10 * pesoKg + 6.25 * alturaCm - 5 * edad + (sexo === "hombre" ? 5 : -161);
+  const mantenimiento = tmb * factor;
+  return { tmb, mantenimiento, perder: mantenimiento - 500, ganar: mantenimiento + 300 };
+}
+
+/* ---------- Potencias y raíces ---------- */
+
+export function raiz(x: number, n: number) {
+  if (n === 0) return NaN;
+  if (x < 0) return n % 2 === 1 ? -Math.pow(-x, 1 / n) : NaN;
+  return Math.pow(x, 1 / n);
+}
+
+/* ---------- Velocidad, distancia y tiempo ---------- */
+
+export function velocidadDistanciaTiempo(calcular: "velocidad" | "distancia" | "tiempo", a: number, b: number) {
+  // velocidad: a = km, b = horas · distancia: a = km/h, b = horas · tiempo: a = km, b = km/h
+  if (calcular === "velocidad") return b > 0 ? a / b : NaN;
+  if (calcular === "distancia") return a * b;
+  return b > 0 ? a / b : NaN;
+}
