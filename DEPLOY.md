@@ -60,6 +60,15 @@ Fes-ho tot primer en **mode Test** i, quan funcioni, repeteix-ho en mode Live.
 2. Compra el Pack 5 amb la targeta de prova `4242 4242 4242 4242` i comprova que el comptador passa a 5.
 3. Quan tot funcioni, canvia a les claus **Live** de Stripe (preus, webhook i secret key), actualitza-les a Vercel i fes **Redeploy**.
 
+## 6. Google (10 min, important!)
+
+Les vendes han de venir de Google, així que aquest pas no te'l saltis:
+1. A **Google Search Console**, afegeix el domini i posa el codi de verificació a `GOOGLE_SITE_VERIFICATION` a Vercel. Fes redeploy.
+2. A **Sitemaps**, envia `https://apte.cat/sitemap.xml`.
+3. A **Inspecció d'URL**, demana la indexació de la portada, de `/detector-castellanismes` i de les 6 guies de `/guia`.
+
+Tens tots els detalls a `docs/VENDES.md`.
+
 ## Números
 
 | | Ingrés net (sense IVA) | Cost IA + Stripe | Marge |

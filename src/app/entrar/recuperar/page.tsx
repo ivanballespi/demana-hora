@@ -2,7 +2,7 @@ import { resetPassword } from "@/app/auth/actions";
 import { AuthForm } from "@/components/AuthForm";
 import { AuthShell } from "@/components/AuthShell";
 
-export const metadata = { title: "Recuperar contrasenya" };
+export const metadata = { title: "Recuperar contrasenya", robots: { index: false } };
 
 export default function Page() {
   return (

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     locale: "ca_ES",
     type: "website",
   },
+  verification: { google: process.env.GOOGLE_SITE_VERIFICATION },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

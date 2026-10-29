@@ -3,7 +3,7 @@ import { signIn } from "@/app/auth/actions";
 import { AuthForm } from "@/components/AuthForm";
 import { AuthShell } from "@/components/AuthShell";
 
-export const metadata = { title: "Entrar" };
+export const metadata = { title: "Entrar", robots: { index: false } };
 
 export default function Page() {
   return (

@@ -1,53 +1,37 @@
-# Apte: mercat i com aconseguir les primeres vendes
+# Apte: vendre sense fer màrqueting (només SEO)
 
-## Per què aquesta idea
+**La idea:** la gent que té l'examen de C1 a prop busca a Google coses com "castellanismes C1", "connectors C1 català" o "model redacció C1". Si apareixem nosaltres, entren a una guia útil, veuen el botó "corregeix-la gratis", la proven i alguns paguen. Tu no hi has de fer res.
 
-- **Dolor urgent i obligatori.** El C1 de català es demana per a places públiques, oposicions i docència. La redacció és la part on més gent suspèn: en una convocatòria recent, només va aprovar el C1 al voltant del 41 % dels presentats a les proves de la Generalitat.
-- **Ja es paga per això.** Una correcció humana d'una redacció de C1 costa uns 25–30 € **per text**, i un professor particular, entre 20 i 25 €/h. Nosaltres oferim correccions il·limitades durant 30 dies per 14,90 €.
-- **Es ven sol (B2C).** No has de convèncer cap negoci. La gent té examen, busca a Google o a les xarxes, prova gratis i paga amb targeta.
-- **Competència feble.** Catfy (generalista, de l'A1 al C2) i Profedecatalà (centrat en les Balears). Nosaltres fem una sola cosa: la redacció del C1/C2, amb nota com la del tribunal, per a català, valencià i balear.
+## Què hi ha ja fet
 
-**Riscos que has de tenir presents:**
-- **És estacional.** Les vendes es concentren les setmanes abans de cada convocatòria. Apunta't el calendari de la Generalitat, de la JQCV i de l'IEB, i fes campanya 4-6 setmanes abans de cada examen.
-- **La qualitat ho és tot.** Si un usuari veu una nota absurda, no torna. Fes-te corregir 10 redaccions reals de nivells diferents abans de fer soroll.
-- **Valencià.** Com a mercat probablement és més gran que Catalunya: la JQCV té molts presentats i el C1 és clau per als docents valencians. No el descuidis.
+- **6 guies** dirigides a cerques reals: castellanismes, connectors, estructura de la redacció, accents diacrítics, model de redacció corregida i C1 de valencià.
+- **Un detector de castellanismes gratuït** (`/detector-castellanismes`). Les eines gratuïtes atrauen enllaços i visites de manera natural, i porten directament a la correcció de pagament.
+- **SEO tècnic complet:** sitemap, robots.txt, URLs canòniques, dades estructurades (FAQ, Article, Breadcrumb, ofertes amb preu), imatge per compartir a xarxes, pàgines estàtiques i ràpides, i enllaços interns entre guies.
 
-## Clients ideals
+## El que has de fer tu (una sola vegada, 15 minuts)
 
-1. **Opositors i docents** que necessiten el C1 o el C2 per a una plaça. Tenen pressa i diners.
-2. **Persones castellanoparlants o nouvingudes** que volen el C1 per a una feina pública o privada.
-3. **Estudiants universitaris** que necessiten el C1 per graduar-se o per a una beca.
+1. **Google Search Console** (https://search.google.com/search-console). Afegeix el domini, copia el codi de verificació a la variable `GOOGLE_SITE_VERIFICATION` de Vercel i fes redeploy. Després, a **Sitemaps**, envia `https://apte.cat/sitemap.xml`.
+2. A **Inspecció d'URL**, demana la indexació de la portada, del detector i de les 6 guies. Va més ràpid que esperar que Google les trobi sol.
+3. **Bing Webmaster Tools** (https://www.bing.com/webmasters). Importa-hi el lloc des de Search Console amb un clic. Bing també alimenta altres cercadors i assistents d'IA.
 
-## On són i què fer (sense conèixer ningú)
+## Expectatives honestes
 
-**Setmana 1: contingut que es comparteix.**
-- **TikTok/Reels/Shorts, 1 vídeo al dia, de 30 segons.** Format: "3 castellanismes que et suspenen el C1", "Corregeixo en directe una redacció de C1 (nota: 24/40)", "Hi han vs hi ha: el que el tribunal no et perdona". Acaba cada vídeo amb "Corregeix la teva gratis a apte.cat". Aquest és el canal amb més potencial i no et costa diners.
-- Grava la pantalla d'Apte corregint un text: que la gent vegi el producte funcionant és el millor anunci que pots fer.
+- **Setmanes 1-4:** Google indexa les pàgines. Visites mínimes. És normal.
+- **Mesos 1-3:** les guies comencen a posicionar per a cerques poc competides (en català n'hi ha poca, de competència). Arriben les primeres vendes.
+- **A partir del mes 3:** si el contingut funciona, el trànsit creix sol. Els pics seran les setmanes abans de cada convocatòria.
 
-**Setmana 1-2: on es reuneixen els opositors.**
-- Grups de Telegram, WhatsApp i Facebook d'opositors (docents, administratius, Mossos, sanitat) de Catalunya, el País Valencià i les Illes. Cerca "oposicions docents Catalunya Telegram", "C1 valencià JQCV grup"...
-- **No facis spam.** Aporta valor primer: comparteix una llista d'errors típics i, al final, "he fet una eina que corregeix la redacció gratis, si algú la vol provar". Demana permís als administradors i ofereix-los un codi descompte per al grup.
-- Fòrums i Reddit: r/catalunya, r/valencia, Forocoches (sí, també hi ha opositors).
+**L'SEO no ven el primer dia.** Si vols vendes abans, l'única drecera sense vídeos és fer **un sol missatge** a 3-4 grups d'opositors o fòrums (r/catalunya, grups de Telegram), presentant-hi el detector gratuït, no el producte. Ho fas un dia i t'oblides. És opcional.
 
-**Setmana 2-3: acadèmies i professors particulars, com a afiliats.**
-- Les acadèmies de preparació no poden corregir 20 redaccions per alumne. Ofereix-los un **codi descompte del 20 % per als seus alumnes** (Stripe → Coupons). Ells hi guanyen, tu hi guanyes.
-- Missatge:
-  > Hola! Soc l'[el teu nom], he creat Apte (apte.cat), un corrector de redaccions de C1/C2 que dona la nota sobre 40 amb els criteris oficials i explica cada error. Molts alumnes us demanen més correccions de les que podeu fer. Us dono un codi del 20 % per als vostres alumnes perquè practiquin entre classe i classe. Us va bé que us faci un compte gratis per provar-lo?
+## Com fer créixer l'SEO sense treballar tu
 
-**Sempre: SEO.** Un cop tinguis vendes, crearem pàgines com "Model d'examen C1 de català corregit", "Errors més freqüents al C1" o "Connectors per al C1", que capten trànsit de Google tot l'any. No ho faig ara perquè primer cal validar que la gent paga.
+**Cada guia nova és una porta d'entrada nova des de Google.** Demana'm, quan vulguis, que n'escrigui més. Idees que tenen cerques:
 
-## Números que has de mirar cada setmana
+- "Pronoms febles C1" (en/hi, combinacions)
+- "Preposicions davant de que" ("es tracta que", "estic segur que")
+- "Model examen C2 català redacció"
+- "Expressions i frases fetes per al C1"
+- "Com aprovar el C1 de català" (guia general)
+- Una guia per a cada tipus de text: carta formal, article d'opinió, correu de reclamació
+- Versions en valencià de les guies que funcionin
 
-- Visites → registres (objectiu: >15 %)
-- Registres → primera correcció feta (objectiu: >70 %; si és baix, la confirmació de correu fa mal)
-- Primera correcció → compra (objectiu: 8-15 %)
-- Despesa a Anthropic per usuari gratuït (hauria de quedar per sota de 0,20 €)
-
-**Per arribar a 1.000 €/mes nets calen unes 120 vendes al mes.** Fixa't en el ritme a les setmanes prèvies a cada examen: allà es veurà si això funciona.
-
-## Què afegirem quan hi hagi vendes (no abans)
-
-1. Generar enunciats nous il·limitats amb la IA, per nivell i tipus de text.
-2. Exercicis automàtics a partir dels errors que l'alumne repeteix.
-3. Simulador d'examen sencer amb temps (el cronòmetre de 90 minuts).
-4. Pàgines SEO i un blog d'errors freqüents.
+**L'única dada que has de mirar:** a Search Console → *Rendiment*, quines cerques porten gent. Quan una cerca comenci a funcionar, fem-ne més contingut a l'entorn.

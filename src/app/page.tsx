@@ -1,5 +1,9 @@
 import Link from "next/link";
-import { Logo } from "@/components/Logo";
+import { JsonLd, SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import { GUIDES } from "@/content/guides";
+import { appUrl } from "@/lib/env";
+
+export const metadata = { alternates: { canonical: "/" } };
 
 const FAQ = [
   ["La nota és fiable?", "És una estimació feta amb els criteris oficials de correcció (adequació, coherència, cohesió, correcció i riquesa) i calibrada amb el llindar d'aprovat. No és la nota del tribunal, però et diu molt bé on ets i, sobretot, què has de millorar."],
@@ -12,13 +16,7 @@ const FAQ = [
 export default function Home() {
   return (
     <div className="flex flex-1 flex-col">
-      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-5">
-        <Logo />
-        <nav className="flex items-center gap-2 text-sm">
-          <Link href="/entrar" className="rounded-lg px-3 py-2 font-medium hover:bg-stone-100">Entrar</Link>
-          <Link href="/registre" className="btn-primary">Prova gratis</Link>
-        </nav>
-      </header>
+      <SiteHeader />
 
       <main className="flex-1">
         <section className="mx-auto max-w-5xl px-4 pb-16 pt-12 text-center sm:pt-20">
@@ -121,6 +119,19 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="mx-auto max-w-5xl px-4 py-20">
+          <h2 className="text-center text-3xl font-extrabold">Recursos gratuïts per preparar el C1</h2>
+          <div className="mt-10 grid gap-3 sm:grid-cols-2">
+            <Link href="/detector-castellanismes" className="card hover:border-brand">
+              <div className="text-xs font-semibold uppercase text-brand">Eina gratuïta</div>
+              <div className="mt-1 font-bold">Detector de castellanismes</div>
+            </Link>
+            {GUIDES.slice(0, 5).map((g) => (
+              <Link key={g.slug} href={`/guia/${g.slug}`} className="card font-bold hover:border-brand">{g.title}</Link>
+            ))}
+          </div>
+        </section>
+
         <section className="bg-brand py-16 text-center text-white">
           <h2 className="px-4 text-3xl font-extrabold">Tens examen aviat? Comença avui.</h2>
           <Link href="/registre" className="btn mt-6 bg-white px-6 py-3 text-base text-brand hover:bg-stone-100">
@@ -129,13 +140,31 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="mx-auto flex w-full max-w-5xl flex-wrap justify-between gap-4 px-4 py-8 text-sm text-stone-500">
-        <span>© {new Date().getFullYear()} Apte · Fet als Països Catalans</span>
-        <div className="flex gap-4">
-          <a href="mailto:hola@apte.cat" className="hover:underline">hola@apte.cat</a>
-          <Link href="/legal" className="hover:underline">Avís legal i privacitat</Link>
-        </div>
-      </footer>
+      <SiteFooter />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              name: "Apte",
+              url: appUrl(),
+              applicationCategory: "EducationalApplication",
+              inLanguage: "ca",
+              description: "Corrector de redaccions del C1 i C2 de català amb IA: nota estimada sobre 40, errors explicats i versió millorada.",
+              offers: [
+                { "@type": "Offer", name: "Primera correcció", price: "0", priceCurrency: "EUR" },
+                { "@type": "Offer", name: "Pack 5 correccions", price: "7.90", priceCurrency: "EUR" },
+                { "@type": "Offer", name: "Intensiu 30 dies", price: "14.90", priceCurrency: "EUR" },
+              ],
+            },
+            {
+              "@type": "FAQPage",
+              mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+            },
+          ],
+        }}
+      />
     </div>
   );
 }

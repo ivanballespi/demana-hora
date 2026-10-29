@@ -34,3 +34,15 @@ body {
 @utility card {
   @apply rounded-2xl border border-stone-200 bg-white p-5 shadow-sm;
 }
+
+/* Text llarg de les guies */
+.article { line-height: 1.75; color: #292524; }
+.article h2 { margin: 2.25rem 0 0.75rem; font-size: 1.4rem; font-weight: 800; color: var(--color-ink); }
+.article h3 { margin: 1.5rem 0 0.5rem; font-size: 1.1rem; font-weight: 700; color: var(--color-ink); }
+.article p, .article ul, .article ol { margin: 0.9rem 0; }
+.article ul { list-style: disc; padding-left: 1.4rem; }
+.article ol { list-style: decimal; padding-left: 1.4rem; }
+.article li { margin: 0.35rem 0; }
+.article a { color: var(--color-brand); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.article blockquote { margin: 1.25rem 0; border-left: 4px solid var(--color-brand); background: var(--color-brand-soft); padding: 0.9rem 1.1rem; border-radius: 0 0.75rem 0.75rem 0; font-family: Georgia, serif; }
+.article mark { background: #fee2e2; color: #7f1d1d; border-radius: 3px; padding: 0 2px; }

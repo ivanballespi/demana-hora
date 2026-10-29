@@ -14,6 +14,7 @@ Enganxes la redacció i, en un minut, tens:
 
 Next.js 16 · Supabase (Auth + Postgres) · Claude Opus 5.5 (amb sortida estructurada) · Stripe Checkout · Vercel.
 
+- `src/content/`: les guies SEO i la llista de castellanismes. Afegir-hi una guia és afegir un objecte a `guides.tsx`.
 - `src/lib/grader.ts`: el prompt i l'esquema de la correcció. **Aquí és on s'afina la qualitat.**
 - `supabase/schema.sql`: les taules i les funcions atòmiques per gastar i afegir crèdits.
 - `src/app/api/corrections`: crea la correcció. Si la IA falla, retorna el crèdit.
@@ -30,4 +31,4 @@ npm run dev
 ## Documents
 
 - **[DEPLOY.md](DEPLOY.md)**: guia de llançament pas a pas
-- **[docs/VENDES.md](docs/VENDES.md)**: mercat, canals i missatges per aconseguir les primeres vendes
+- **[docs/VENDES.md](docs/VENDES.md)**: com vendre només amb SEO, sense màrqueting
