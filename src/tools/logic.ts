@@ -448,3 +448,160 @@ export function proximoEvento(slug: string, hoy: string) {
   if (fecha < hoy) fecha = ev.fecha(y + 1);
   return { fecha, dias: Math.round((parseFecha(fecha) - parseFecha(hoy)) / DIA) };
 }
+
+/* ---------- Fracciones ---------- */
+
+export type Fraccion = { n: number; d: number };
+
+export function parseFraccion(s: string): Fraccion | null {
+  const t = s.trim().replace(",", ".");
+  const mixto = t.match(/^(-?\d+)\s+(\d+)\/(\d+)$/); // 1 1/2
+  if (mixto) {
+    const e = Number(mixto[1]), n = Number(mixto[2]), d = Number(mixto[3]);
+    if (!d) return null;
+    return simplificar({ n: e * d + (e < 0 ? -n : n), d });
+  }
+  const f = t.match(/^(-?\d+)\s*\/\s*(-?\d+)$/);
+  if (f) return Number(f[2]) ? simplificar({ n: Number(f[1]), d: Number(f[2]) }) : null;
+  if (/^-?\d+(\.\d+)?$/.test(t)) {
+    const dec = (t.split(".")[1] ?? "").length;
+    const d = 10 ** dec;
+    return simplificar({ n: Math.round(Number(t) * d), d });
+  }
+  return null;
+}
+
+export function simplificar({ n, d }: Fraccion): Fraccion {
+  if (d < 0) { n = -n; d = -d; }
+  const g = mcd([Math.abs(n), d]) || 1;
+  return { n: n / g, d: d / g };
+}
+
+export function operarFracciones(a: Fraccion, b: Fraccion, op: "+" | "-" | "×" | "÷"): Fraccion | null {
+  switch (op) {
+    case "+": return simplificar({ n: a.n * b.d + b.n * a.d, d: a.d * b.d });
+    case "-": return simplificar({ n: a.n * b.d - b.n * a.d, d: a.d * b.d });
+    case "×": return simplificar({ n: a.n * b.n, d: a.d * b.d });
+    case "÷": return b.n === 0 ? null : simplificar({ n: a.n * b.d, d: a.d * b.n });
+  }
+}
+
+export const fraccionATexto = (f: Fraccion) => (f.d === 1 ? String(f.n) : `${f.n}/${f.d}`);
+export function fraccionMixta(f: Fraccion) {
+  const e = Math.trunc(f.n / f.d);
+  const r = Math.abs(f.n % f.d);
+  return e === 0 || r === 0 ? null : `${e} ${r}/${f.d}`;
+}
+
+/* ---------- Estadística ---------- */
+
+export function estadistica(nums: number[]) {
+  const n = nums.length;
+  const orden = [...nums].sort((a, b) => a - b);
+  const suma = nums.reduce((s, x) => s + x, 0);
+  const media = suma / n;
+  const mediana = n % 2 ? orden[(n - 1) / 2] : (orden[n / 2 - 1] + orden[n / 2]) / 2;
+  const freq = new Map<number, number>();
+  nums.forEach((x) => freq.set(x, (freq.get(x) ?? 0) + 1));
+  const max = Math.max(...freq.values());
+  const moda = max > 1 ? [...freq.entries()].filter(([, c]) => c === max).map(([v]) => v).sort((a, b) => a - b) : [];
+  const sq = nums.reduce((s, x) => s + (x - media) ** 2, 0);
+  return {
+    n, suma, media, mediana, moda, min: orden[0], max: orden[n - 1], rango: orden[n - 1] - orden[0],
+    desviacion: Math.sqrt(sq / n), desviacionMuestral: n > 1 ? Math.sqrt(sq / (n - 1)) : NaN,
+  };
+}
+
+/* ---------- Geometría ---------- */
+
+export function figura(tipo: "cuadrado" | "rectangulo" | "circulo" | "triangulo", v: number[]) {
+  switch (tipo) {
+    case "cuadrado": return { area: v[0] ** 2, perimetro: 4 * v[0] };
+    case "rectangulo": return { area: v[0] * v[1], perimetro: 2 * (v[0] + v[1]) };
+    case "circulo": return { area: Math.PI * v[0] ** 2, perimetro: 2 * Math.PI * v[0] };
+    case "triangulo": {
+      const [a, b, c] = v;
+      if (a + b <= c || a + c <= b || b + c <= a) return { area: NaN, perimetro: NaN };
+      const s = (a + b + c) / 2; // fórmula de Herón
+      return { area: Math.sqrt(s * (s - a) * (s - b) * (s - c)), perimetro: a + b + c };
+    }
+  }
+}
+
+/* ---------- Deporte ---------- */
+
+/** "1:05:30", "45:00" o "50" (minutos) → segundos */
+export function parseTiempo(s: string): number {
+  const p = s.trim().split(":").map(Number);
+  if (!p.length || p.some((x) => !Number.isFinite(x) || x < 0)) return NaN;
+  if (p.length === 1) return p[0] * 60;
+  if (p.length === 2) return p[0] * 60 + p[1];
+  if (p.length === 3) return p[0] * 3600 + p[1] * 60 + p[2];
+  return NaN;
+}
+
+export function formatoTiempo(seg: number): string {
+  const s = Math.round(seg);
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60;
+  return h ? `${h}:${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}` : `${m}:${String(r).padStart(2, "0")}`;
+}
+
+export function ritmo(km: number, segundos: number) {
+  const segPorKm = segundos / km;
+  return {
+    ritmo: formatoTiempo(segPorKm),
+    velocidad: km / (segundos / 3600),
+    predicciones: [["5 km", 5], ["10 km", 10], ["Media maratón", 21.0975], ["Maratón", 42.195]].map(([n, d]) => ({
+      nombre: n as string,
+      tiempo: formatoTiempo(segPorKm * (d as number)),
+    })),
+  };
+}
+
+/* ---------- TIN / TAE ---------- */
+
+export const tinATae = (tin: number, periodos = 12) => (Math.pow(1 + tin / 100 / periodos, periodos) - 1) * 100;
+export const taeATin = (tae: number, periodos = 12) => (Math.pow(1 + tae / 100, 1 / periodos) - 1) * periodos * 100;
+
+/* ---------- Trabajo ---------- */
+
+/** Vacaciones proporcionales: días anuales × días trabajados ÷ días del año. */
+export function vacacionesProporcionales(inicio: string, fin: string, diasAnuales: number, disfrutados = 0) {
+  const trabajados = Math.round((parseFecha(fin) - parseFecha(inicio)) / DIA) + 1;
+  const y = Number(inicio.slice(0, 4));
+  const diasAño = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0 ? 366 : 365;
+  const generados = (diasAnuales * trabajados) / diasAño;
+  return { trabajados, generados, pendientes: generados - disfrutados };
+}
+
+/** Horas entre dos horas del día; si la de salida es anterior, se entiende que se pasa la medianoche. */
+export function horasEntre(entrada: string, salida: string, pausaMin = 0) {
+  const a = toMin(entrada), b = toMin(salida);
+  let min = b - a;
+  const nocturno = min < 0;
+  if (nocturno) min += 24 * 60;
+  return { minutos: Math.max(0, min - pausaMin), nocturno };
+}
+const toMin = (h: string) => { const [x, y] = h.split(":").map(Number); return x * 60 + y; };
+
+/* ---------- Bases numéricas ---------- */
+
+export function convertirBase(valor: string, base: 2 | 8 | 10 | 16) {
+  const v = valor.trim().toLowerCase().replace(/^0[bxo]/, "").replace(/[\s_]/g, "");
+  const validos = { 2: /^[01]+$/, 8: /^[0-7]+$/, 10: /^\d+$/, 16: /^[0-9a-f]+$/ }[base];
+  if (!v || !validos.test(v)) return null;
+  const prefijo = { 2: "0b", 8: "0o", 10: "", 16: "0x" }[base];
+  const n = BigInt(prefijo + v);
+  return { bin: n.toString(2), oct: n.toString(8), dec: n.toString(10), hex: n.toString(16).toUpperCase() };
+}
+
+/* ---------- Mascotas ---------- */
+
+/** Edad equivalente en años humanos (reglas orientativas habituales en veterinaria). */
+export function edadMascota(años: number, especie: "perro" | "gato", tamaño: "pequeño" | "mediano" | "grande" = "mediano") {
+  const porAño = especie === "gato" ? 4 : { pequeño: 4, mediano: 5, grande: 6 }[tamaño];
+  const tradicional = años <= 1 ? años * 15 : años <= 2 ? 15 + (años - 1) * 9 : 24 + (años - 2) * porAño;
+  // Wang et al. (2020), basada en la metilación del ADN en labradores: 16·ln(edad) + 31
+  const cientifica = especie === "perro" && años >= 1 ? 16 * Math.log(años) + 31 : NaN;
+  return { tradicional, cientifica };
+}

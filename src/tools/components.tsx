@@ -769,6 +769,291 @@ function CuentaAtras() {
   );
 }
 
+function Fracciones() {
+  const [a, setA] = useState("1/2");
+  const [b, setB] = useState("3/4");
+  const [op, setOp] = useState<"+" | "-" | "×" | "÷">("+");
+  const fa = L.parseFraccion(a), fb = L.parseFraccion(b);
+  const r = fa && fb ? L.operarFracciones(fa, fb, op) : null;
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-3">
+        <Field label="Fracción 1" value={a} onChange={(e) => setA(e.target.value)} placeholder="1/2" />
+        <select className="input w-auto text-lg font-bold" value={op} onChange={(e) => setOp(e.target.value as typeof op)} aria-label="Operación">
+          {["+", "-", "×", "÷"].map((o) => <option key={o}>{o}</option>)}
+        </select>
+        <Field label="Fracción 2" value={b} onChange={(e) => setB(e.target.value)} placeholder="3/4" />
+      </div>
+      {r ? (
+        <>
+          <Big label="Resultado simplificado">{L.fraccionATexto(r)}</Big>
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label="Número mixto" value={L.fraccionMixta(r) ?? "—"} />
+            <Stat label="En decimal" value={num(r.n / r.d, 6)} />
+          </div>
+        </>
+      ) : (
+        <Big>{fa && fb ? "No se puede dividir entre 0" : "Escribe fracciones como 3/4, 1 1/2 o 0,5"}</Big>
+      )}
+    </div>
+  );
+}
+
+function Estadistica() {
+  const [t, setT] = useState("7, 8, 5, 9, 6, 8, 10, 7, 8");
+  const nums = t.split(/[\s,;]+/).map((x) => parse(x)).filter((n) => Number.isFinite(n));
+  const r = nums.length ? L.estadistica(nums) : null;
+  return (
+    <div className="space-y-4">
+      <label className="block">
+        <span className="label">Números (separados por comas, espacios o saltos de línea)</span>
+        <textarea className="input min-h-28" value={t} onChange={(e) => setT(e.target.value)} />
+      </label>
+      {r && (
+        <>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Big label="Media">{num(r.media, 4)}</Big>
+            <Big label="Mediana">{num(r.mediana, 4)}</Big>
+            <Big label="Moda">{r.moda.length ? r.moda.map((m) => num(m)).join(", ") : "No hay"}</Big>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <Stat label="Cantidad de datos" value={r.n} />
+            <Stat label="Suma" value={num(r.suma, 4)} />
+            <Stat label="Rango" value={`${num(r.rango)} (${num(r.min)} – ${num(r.max)})`} />
+            <Stat label="Desviación típica" value={num(r.desviacion, 4)} />
+            <Stat label="Desv. típica muestral" value={num(r.desviacionMuestral, 4)} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function AreaPerimetro() {
+  type F = "cuadrado" | "rectangulo" | "circulo" | "triangulo";
+  const [f, setF] = useState<F>("rectangulo");
+  const [v, setV] = useState(["4", "3", "5"]);
+  const campos: Record<F, string[]> = { cuadrado: ["Lado"], rectangulo: ["Base", "Altura"], circulo: ["Radio"], triangulo: ["Lado a", "Lado b", "Lado c"] };
+  const vals = campos[f].map((_, i) => parse(v[i]));
+  const ok = vals.every((x) => x > 0);
+  const r = ok ? L.figura(f, vals) : null;
+  return (
+    <div className="space-y-4">
+      <Tabs value={f} onChange={setF} options={[["cuadrado", "Cuadrado"], ["rectangulo", "Rectángulo"], ["circulo", "Círculo"], ["triangulo", "Triángulo"]]} />
+      <div className="grid gap-3 sm:grid-cols-3">
+        {campos[f].map((c, i) => (
+          <Field key={c} label={c} value={v[i]} onChange={(e) => setV((old) => old.map((x, j) => (j === i ? e.target.value : x)))} inputMode="decimal" />
+        ))}
+      </div>
+      {r && Number.isFinite(r.area) ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Big label="Área">{num(r.area, 4)} <span className="text-base text-stone-500">u²</span></Big>
+          <Big label={f === "circulo" ? "Perímetro (circunferencia)" : "Perímetro"}>{num(r.perimetro, 4)} <span className="text-base text-stone-500">u</span></Big>
+        </div>
+      ) : (
+        <Big>{ok ? "Con esas medidas no existe el triángulo" : "Introduce medidas mayores que 0"}</Big>
+      )}
+    </div>
+  );
+}
+
+function BasesNumericas() {
+  const [base, setBase] = useState<"2" | "8" | "10" | "16">("10");
+  const [v, setV] = useState("255");
+  const r = L.convertirBase(v, Number(base) as 2 | 8 | 10 | 16);
+  const filas: [string, string][] = r ? [["Binario (base 2)", r.bin], ["Octal (base 8)", r.oct], ["Decimal (base 10)", r.dec], ["Hexadecimal (base 16)", r.hex]] : [];
+  return (
+    <div className="space-y-4">
+      <Tabs value={base} onChange={setBase} options={[["2", "Binario"], ["8", "Octal"], ["10", "Decimal"], ["16", "Hexadecimal"]]} />
+      <Field label="Número" value={v} onChange={(e) => setV(e.target.value)} autoComplete="off" spellCheck={false} />
+      {r ? (
+        <div className="space-y-2">
+          {filas.map(([l, x]) => (
+            <div key={l} className="flex items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white p-3">
+              <div className="min-w-0">
+                <div className="text-xs text-stone-500">{l}</div>
+                <div className="break-all font-mono text-lg font-bold">{x}</div>
+              </div>
+              <Copy text={x} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <Big>{v.trim() ? "Ese número no es válido en esta base" : "Escribe un número"}</Big>
+      )}
+    </div>
+  );
+}
+
+function Prestamo() {
+  const [cap, setCap] = useState("10000");
+  const [int, setInt] = useState("7");
+  const [meses, setMeses] = useState("60");
+  const c = parse(cap), i = parse(int), m = parseInt(meses, 10);
+  const r = c > 0 && i >= 0 && m > 0 && m <= 600 ? L.hipoteca(c, i, m / 12) : null;
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Field label="Importe (€)" value={cap} onChange={(e) => setCap(e.target.value)} inputMode="decimal" />
+        <Field label="Interés anual TIN (%)" value={int} onChange={(e) => setInt(e.target.value)} inputMode="decimal" />
+        <Field label="Plazo (meses)" value={meses} onChange={(e) => setMeses(e.target.value)} inputMode="numeric" />
+      </div>
+      {r && (
+        <>
+          <Big label="Cuota mensual">{eur(r.cuota)}</Big>
+          <div className="grid grid-cols-3 gap-3">
+            <Stat label="Intereses" value={eur(r.totalIntereses)} />
+            <Stat label="Total a devolver" value={eur(r.totalPagado)} />
+            <Stat label="TAE aprox. (sin comisiones)" value={`${num(L.tinATae(i))} %`} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function TinTae() {
+  const [modo, setModo] = useState<"tin" | "tae">("tin");
+  const [v, setV] = useState("5");
+  const [n, setN] = useState("12");
+  const x = parse(v), p = Number(n);
+  const r = modo === "tin" ? L.tinATae(x, p) : L.taeATin(x, p);
+  return (
+    <div className="space-y-4">
+      <Tabs value={modo} onChange={setModo} options={[["tin", "De TIN a TAE"], ["tae", "De TAE a TIN"]]} />
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label={modo === "tin" ? "TIN (%)" : "TAE (%)"} value={v} onChange={(e) => setV(e.target.value)} inputMode="decimal" />
+        <label className="block">
+          <span className="label">Pagos de intereses al año</span>
+          <select className="input" value={n} onChange={(e) => setN(e.target.value)}>
+            <option value="12">Mensual (12)</option>
+            <option value="4">Trimestral (4)</option>
+            <option value="2">Semestral (2)</option>
+            <option value="1">Anual (1)</option>
+          </select>
+        </label>
+      </div>
+      <Big label={modo === "tin" ? "TAE equivalente" : "TIN equivalente"}>{Number.isFinite(r) ? `${num(r, 3)} %` : "—"}</Big>
+    </div>
+  );
+}
+
+function Vacaciones() {
+  const y = today().slice(0, 4);
+  const [ini, setIni] = useState(`${y}-01-01`);
+  const [fin, setFin] = useState(today());
+  const [anuales, setAnuales] = useState("30");
+  const [disf, setDisf] = useState("0");
+  const ok = ini && fin && ini <= fin;
+  const r = ok ? L.vacacionesProporcionales(ini, fin, parse(anuales) || 0, parse(disf) || 0) : null;
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Inicio del periodo" type="date" value={ini} onChange={(e) => setIni(e.target.value)} />
+        <Field label="Fin del periodo (o hoy)" type="date" value={fin} onChange={(e) => setFin(e.target.value)} />
+        <Field label="Días de vacaciones al año" value={anuales} onChange={(e) => setAnuales(e.target.value)} inputMode="decimal" />
+        <Field label="Días ya disfrutados" value={disf} onChange={(e) => setDisf(e.target.value)} inputMode="decimal" />
+      </div>
+      {r ? (
+        <>
+          <Big label="Días de vacaciones generados">{num(r.generados, 2)} días</Big>
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label="Días trabajados en el periodo" value={r.trabajados} />
+            <Stat label="Te quedan por disfrutar" value={`${num(r.pendientes, 2)} días`} />
+          </div>
+        </>
+      ) : (
+        <Big>La fecha de fin debe ser posterior a la de inicio</Big>
+      )}
+    </div>
+  );
+}
+
+function HorasEntre() {
+  const [a, setA] = useState("09:00");
+  const [b, setB] = useState("17:30");
+  const [p, setP] = useState("30");
+  const r = a && b ? L.horasEntre(a, b, parseInt(p, 10) || 0) : null;
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-3">
+        <Field label="Entrada" type="time" value={a} onChange={(e) => setA(e.target.value)} />
+        <Field label="Salida" type="time" value={b} onChange={(e) => setB(e.target.value)} />
+        <Field label="Pausa (min)" value={p} onChange={(e) => setP(e.target.value)} inputMode="numeric" />
+      </div>
+      {r && (
+        <>
+          <Big label="Tiempo trabajado">{L.minutosAHoras(r.minutos)} h</Big>
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label="En horas decimales" value={`${num(r.minutos / 60)} h`} />
+            <Stat label="Turno" value={r.nocturno ? "Pasa la medianoche 🌙" : "Mismo día"} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function RitmoRunning() {
+  const [km, setKm] = useState("10");
+  const [t, setT] = useState("50:00");
+  const d = parse(km), s = L.parseTiempo(t);
+  const r = d > 0 && s > 0 ? L.ritmo(d, s) : null;
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Distancia (km)" value={km} onChange={(e) => setKm(e.target.value)} inputMode="decimal" />
+        <Field label="Tiempo (h:mm:ss o mm:ss)" value={t} onChange={(e) => setT(e.target.value)} placeholder="50:00" />
+      </div>
+      {r ? (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <Big label="Ritmo">{r.ritmo} <span className="text-base text-stone-500">min/km</span></Big>
+            <Big label="Velocidad">{num(r.velocidad, 1)} <span className="text-base text-stone-500">km/h</span></Big>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {r.predicciones.map((p) => <Stat key={p.nombre} label={p.nombre} value={p.tiempo} />)}
+          </div>
+        </>
+      ) : (
+        <Big>Escribe la distancia y el tiempo (ej.: 50:00)</Big>
+      )}
+    </div>
+  );
+}
+
+function EdadMascota() {
+  const [esp, setEsp] = useState<"perro" | "gato">("perro");
+  const [tam, setTam] = useState<"pequeño" | "mediano" | "grande">("mediano");
+  const [a, setA] = useState("5");
+  const años = parse(a);
+  const r = años > 0 && años < 40 ? L.edadMascota(años, esp, tam) : null;
+  return (
+    <div className="space-y-4">
+      <Tabs value={esp} onChange={setEsp} options={[["perro", "🐶 Perro"], ["gato", "🐱 Gato"]]} />
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Edad (años)" value={a} onChange={(e) => setA(e.target.value)} inputMode="decimal" />
+        {esp === "perro" && (
+          <label className="block">
+            <span className="label">Tamaño</span>
+            <select className="input" value={tam} onChange={(e) => setTam(e.target.value as typeof tam)}>
+              <option value="pequeño">Pequeño (menos de 10 kg)</option>
+              <option value="mediano">Mediano (10-25 kg)</option>
+              <option value="grande">Grande (más de 25 kg)</option>
+            </select>
+          </label>
+        )}
+      </div>
+      {r && (
+        <>
+          <Big label="En años humanos">{num(r.tradicional, 0)} años</Big>
+          {Number.isFinite(r.cientifica) && <Stat label="Según la fórmula científica de 2020 (16·ln(edad) + 31)" value={`${num(r.cientifica, 0)} años`} />}
+        </>
+      )}
+    </div>
+  );
+}
+
 export const TOOL_COMPONENTS: Record<string, () => React.ReactNode> = {
   "numeros-a-letras": NumerosALetras,
   "letra-dni": LetraDni,
@@ -796,6 +1081,16 @@ export const TOOL_COMPONENTS: Record<string, () => React.ReactNode> = {
   "semana-del-ano": SemanaAno,
   "numero-aleatorio": Aleatorio,
   "cuenta-atras": CuentaAtras,
+  "calculadora-fracciones": Fracciones,
+  "media-mediana-moda": Estadistica,
+  "area-perimetro": AreaPerimetro,
+  "conversor-binario-decimal": BasesNumericas,
+  "calculadora-prestamo": Prestamo,
+  "tin-tae": TinTae,
+  "vacaciones-proporcionales": Vacaciones,
+  "horas-entre-dos-horas": HorasEntre,
+  "calculadora-ritmo-running": RitmoRunning,
+  "edad-perro-gato-anos-humanos": EdadMascota,
 };
 
 /** Botons per compartir l'eina: el trànsit que porten els usuaris és gratis. */

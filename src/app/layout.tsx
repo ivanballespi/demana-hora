@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: `${SITE_NAME} · Calculadoras y herramientas online gratis`, template: `%s | ${SITE_NAME}` },
   description:
-    "Más de 25 calculadoras y herramientas gratis en español: IVA, porcentajes, hipoteca, letra del DNI, días entre fechas, números a letras, IMC y más. Rápidas, sin registro y sin instalar nada.",
+    "Más de 35 calculadoras y herramientas gratis en español: IVA, porcentajes, hipoteca, préstamos, letra del DNI, días entre fechas, fracciones, números a letras, IMC y más. Rápidas, sin registro y sin instalar nada.",
   openGraph: { siteName: SITE_NAME, locale: "es_ES", type: "website" },
   twitter: { card: "summary_large_image" },
   formatDetection: { telephone: false },

@@ -14,13 +14,13 @@ export const CATEGORIES: Record<Category, string> = {
 
 /** Pàgina de categoria: /categoria/<slug>/ */
 export const CATEGORY_INFO: Record<Category, { slug: string; icon: string; title: string; intro: string }> = {
-  calculos: { slug: "calculadoras", icon: "🧮", title: "Calculadoras online gratis", intro: "Porcentajes, IVA, descuentos, regla de tres, nota media, máximo común divisor... Las calculadoras que más se usan en el día a día, con la explicación de cada cálculo." },
-  finanzas: { slug: "finanzas", icon: "💶", title: "Calculadoras financieras", intro: "Calcula la cuota de tu hipoteca, cuánto crecerán tus ahorros con el interés compuesto o cuánto te costará un viaje en coche." },
-  fechas: { slug: "fechas", icon: "📅", title: "Calculadoras de fechas y tiempo", intro: "Días entre dos fechas, edad exacta, semana del año, cuenta atrás, sumar días a una fecha o sumar horas trabajadas." },
-  salud: { slug: "salud", icon: "❤️", title: "Calculadoras de salud", intro: "Calcula tu índice de masa corporal (IMC) o la fecha probable de parto. Son orientativas: ante cualquier duda, consulta con un profesional sanitario." },
+  calculos: { slug: "calculadoras", icon: "🧮", title: "Calculadoras online gratis", intro: "Porcentajes, IVA, descuentos, fracciones, regla de tres, media y mediana, áreas y perímetros... Las calculadoras que más se usan en el día a día y en clase, con la explicación de cada cálculo." },
+  finanzas: { slug: "finanzas", icon: "💶", title: "Calculadoras financieras", intro: "Calcula la cuota de tu hipoteca o de un préstamo personal, pasa de TIN a TAE, descubre cuánto crecerán tus ahorros con el interés compuesto o cuánto te costará un viaje en coche." },
+  fechas: { slug: "fechas", icon: "📅", title: "Calculadoras de fechas y tiempo", intro: "Días entre dos fechas, edad exacta, semana del año, cuenta atrás, vacaciones proporcionales, horas entre dos horas o sumar las horas trabajadas." },
+  salud: { slug: "salud", icon: "❤️", title: "Calculadoras de salud", intro: "Calcula tu índice de masa corporal (IMC), tu ritmo de carrera o la fecha probable de parto. Son orientativas: ante cualquier duda, consulta con un profesional sanitario." },
   documentos: { slug: "documentos", icon: "🪪", title: "Herramientas para documentos", intro: "Calcula la letra del DNI o NIE y comprueba si un IBAN es correcto antes de hacer una transferencia." },
-  texto: { slug: "texto", icon: "✍️", title: "Herramientas de texto", intro: "Convierte números a letras, cuenta palabras y caracteres, cambia mayúsculas y minúsculas o pasa números a romanos." },
-  utilidades: { slug: "utilidades", icon: "🛠️", title: "Utilidades online", intro: "Genera contraseñas seguras, números aleatorios para sorteos y convierte unidades de medida." },
+  texto: { slug: "texto", icon: "✍️", title: "Herramientas de texto", intro: "Convierte números a letras, cuenta palabras y caracteres, cambia mayúsculas y minúsculas, pasa números a romanos o entre binario, decimal y hexadecimal." },
+  utilidades: { slug: "utilidades", icon: "🛠️", title: "Utilidades online", intro: "Genera contraseñas seguras y números aleatorios para sorteos, convierte unidades de medida o calcula la edad de tu perro o gato en años humanos." },
 };
 
 export const ICONS: Record<string, string> = {
@@ -30,6 +30,9 @@ export const ICONS: Record<string, string> = {
   "convertir-mayusculas-minusculas": "🔠", "numeros-romanos": "🏛️", "generador-contrasenas": "🔐", "calculadora-imc": "⚖️",
   "fecha-probable-de-parto": "🤰", "mcd-mcm": "➗", "calculadora-descuentos": "🏷️", "coste-viaje-gasolina": "⛽",
   "conversor-unidades": "📏", "semana-del-ano": "🗓️", "numero-aleatorio": "🎲", "cuenta-atras": "⏳",
+  "calculadora-fracciones": "½", "media-mediana-moda": "📊", "area-perimetro": "🔷", "conversor-binario-decimal": "💻",
+  "calculadora-prestamo": "💳", "tin-tae": "🏛", "vacaciones-proporcionales": "🏖️", "horas-entre-dos-horas": "🕘",
+  "calculadora-ritmo-running": "🏃", "edad-perro-gato-anos-humanos": "🐶",
 };
 
 /** Les que surten destacades a la portada. */
@@ -563,6 +566,203 @@ export const TOOLS: ToolMeta[] = [
     },
     faq: [
       ["¿Cuenta el día de hoy?", "La cuenta atrás va hasta el instante exacto que elijas; si no pones hora, hasta las 00:00 de ese día."],
+    ],
+  },
+  {
+    slug: "calculadora-fracciones",
+    category: "calculos",
+    name: "Calculadora de fracciones",
+    title: "Calculadora de fracciones: sumar, restar, multiplicar y dividir",
+    description: "Suma, resta, multiplica y divide fracciones y obtén el resultado simplificado, como número mixto y en decimal. Con la explicación paso a paso.",
+    intro: "Escribe dos fracciones (por ejemplo 1/2 y 3/4, también números mixtos como 1 1/2 o decimales) y elige la operación. Te damos el resultado simplificado.",
+    howTo: {
+      title: "Cómo se opera con fracciones",
+      body: [
+        "Para sumar o restar se busca un denominador común: a/b + c/d = (a·d + c·b) / (b·d). Después se simplifica dividiendo arriba y abajo por el máximo común divisor.",
+        "Para multiplicar se multiplican numeradores y denominadores: a/b × c/d = (a·c) / (b·d).",
+        "Para dividir se multiplica por la fracción inversa: a/b ÷ c/d = (a·d) / (b·c).",
+      ],
+    },
+    faq: [
+      ["¿Cómo se simplifica una fracción?", "Dividiendo el numerador y el denominador entre su máximo común divisor. 6/8 se simplifica a 3/4 dividiendo entre 2."],
+      ["¿Qué es un número mixto?", "Un entero más una fracción: 7/3 es 2 1/3, es decir, dos enteros y un tercio."],
+    ],
+  },
+  {
+    slug: "media-mediana-moda",
+    category: "calculos",
+    name: "Media, mediana y moda",
+    title: "Calcular la media, la mediana y la moda (y la desviación típica)",
+    description: "Pega una lista de números y calcula al instante la media, la mediana, la moda, el rango y la desviación típica. Para estadística del colegio o del trabajo.",
+    intro: "Escribe o pega los números separados por comas, espacios o saltos de línea. Te calculamos las medidas estadísticas más habituales.",
+    howTo: {
+      title: "Qué es cada medida",
+      body: [
+        "La media es la suma de todos los valores dividida entre cuántos hay. La mediana es el valor central cuando los ordenas (si hay un número par de datos, la media de los dos centrales). La moda es el valor que más se repite.",
+        "El rango es la diferencia entre el valor más alto y el más bajo, y la desviación típica mide cuánto se alejan los datos de la media.",
+        "Usa la desviación típica poblacional si tienes todos los datos, y la muestral si es una muestra de un grupo mayor.",
+      ],
+    },
+    faq: [
+      ["¿Cuándo es mejor la mediana que la media?", "Cuando hay valores extremos. En sueldos, por ejemplo, unos pocos sueldos muy altos suben mucho la media, pero apenas mueven la mediana."],
+      ["¿Puede haber más de una moda?", "Sí. Si dos valores se repiten el mismo número de veces, la distribución es bimodal."],
+    ],
+  },
+  {
+    slug: "area-perimetro",
+    category: "calculos",
+    name: "Área y perímetro",
+    title: "Calculadora de área y perímetro: cuadrado, rectángulo, círculo y triángulo",
+    description: "Calcula el área y el perímetro de un cuadrado, un rectángulo, un círculo o un triángulo (con la fórmula de Herón). Con las fórmulas explicadas.",
+    intro: "Elige la figura e introduce sus medidas. Te damos el área y el perímetro al momento, en las mismas unidades que uses.",
+    howTo: {
+      title: "Fórmulas de área y perímetro",
+      body: [
+        "Cuadrado: área = lado², perímetro = 4 × lado. Rectángulo: área = base × altura, perímetro = 2 × (base + altura).",
+        "Círculo: área = π × radio², perímetro (circunferencia) = 2 × π × radio.",
+        "Triángulo con sus tres lados: perímetro = a + b + c; el área se calcula con la fórmula de Herón, √(s(s−a)(s−b)(s−c)), donde s es el semiperímetro.",
+      ],
+    },
+    faq: [
+      ["¿Cómo calculo los metros cuadrados de una habitación?", "Multiplica el largo por el ancho en metros. Una habitación de 4 × 3 m tiene 12 m²."],
+      ["¿Por qué no me deja calcular un triángulo?", "Porque con esas medidas no existe: cada lado tiene que ser menor que la suma de los otros dos."],
+    ],
+  },
+  {
+    slug: "conversor-binario-decimal",
+    category: "texto",
+    name: "Binario, decimal y hexadecimal",
+    title: "Conversor binario, decimal, octal y hexadecimal",
+    description: "Convierte números entre binario, decimal, octal y hexadecimal al instante, incluso números muy grandes. Para clase, programación y electrónica.",
+    intro: "Elige la base del número que tienes, escríbelo y te lo damos en las otras tres bases.",
+    howTo: {
+      title: "Cómo funcionan las bases numéricas",
+      body: [
+        "En base 10 (decimal) cada posición vale 10 veces más que la anterior. En base 2 (binario) cada posición vale el doble: 1101 = 8 + 4 + 0 + 1 = 13.",
+        "El hexadecimal usa 16 símbolos (0-9 y A-F) y es muy cómodo en informática porque cada cifra equivale a 4 bits: FF = 255 = 11111111.",
+      ],
+    },
+    faq: [
+      ["¿Cuánto es 255 en binario?", "11111111 (ocho unos), que en hexadecimal es FF."],
+      ["¿Admite números grandes?", "Sí, trabaja con enteros de cualquier tamaño sin perder precisión."],
+    ],
+  },
+  {
+    slug: "calculadora-prestamo",
+    category: "finanzas",
+    name: "Calculadora de préstamos",
+    title: "Calculadora de préstamos personales: cuota mensual e intereses",
+    description: "Calcula la cuota mensual de un préstamo personal o para el coche, los intereses totales y lo que pagarás en total, según el importe, el interés y los meses.",
+    intro: "Indica cuánto pides, el tipo de interés (TIN) y en cuántos meses lo devuelves. Te calculamos la cuota y cuánto te cuesta realmente el préstamo.",
+    howTo: {
+      title: "Cómo se calcula la cuota de un préstamo",
+      body: [
+        "Los préstamos personales en España suelen usar el sistema francés: la misma cuota cada mes, con más intereses al principio.",
+        "Cuota = importe × i ÷ (1 − (1 + i)^−n), donde i es el TIN anual ÷ 12 y n el número de meses.",
+        "Para comparar préstamos, fíjate en la TAE, que incluye las comisiones y la frecuencia de pago. Puedes pasar de TIN a TAE con nuestra calculadora.",
+      ],
+    },
+    faq: [
+      ["¿Cuánto pagaré por un préstamo de 10.000 € a 5 años al 7%?", "Unos 198 € al mes, y unos 1.880 € de intereses en total."],
+      ["¿Incluye comisiones?", "No: es la cuota de capital e intereses. Las comisiones de apertura y los seguros vinculados se pagan aparte."],
+    ],
+  },
+  {
+    slug: "tin-tae",
+    category: "finanzas",
+    name: "TIN a TAE",
+    title: "Calculadora TIN a TAE (y de TAE a TIN)",
+    description: "Convierte el TIN de un préstamo, hipoteca o depósito a TAE y al revés, según la frecuencia de pago. Entiende cuánto cuesta o rinde de verdad.",
+    intro: "Escribe el TIN (o la TAE) y la frecuencia con la que se pagan los intereses. Te damos el otro valor al instante.",
+    howTo: {
+      title: "Diferencia entre TIN y TAE",
+      body: [
+        "El TIN (tipo de interés nominal) es el porcentaje que se aplica al capital. La TAE (tasa anual equivalente) tiene en cuenta además cada cuánto se pagan o cobran los intereses.",
+        "TAE = (1 + TIN ÷ n)^n − 1, donde n es el número de pagos al año (12 si es mensual). Un TIN del 5% con pagos mensuales equivale a una TAE del 5,12%.",
+        "La TAE oficial de un producto incluye también las comisiones y algunos gastos, así que la que te dé el banco puede ser algo mayor que la de esta calculadora.",
+      ],
+    },
+    faq: [
+      ["¿Qué es mejor, fijarse en el TIN o en la TAE?", "En la TAE: es el dato que permite comparar productos con distintas comisiones y frecuencias de pago."],
+      ["¿Por qué la TAE es mayor que el TIN?", "Porque los intereses que se pagan antes de fin de año generan, a su vez, intereses."],
+    ],
+  },
+  {
+    slug: "vacaciones-proporcionales",
+    category: "fechas",
+    name: "Vacaciones proporcionales",
+    title: "Calculadora de vacaciones proporcionales: días que te corresponden",
+    description: "Calcula cuántos días de vacaciones te corresponden según el tiempo trabajado, para un contrato que empieza o acaba a mitad de año o para el finiquito.",
+    intro: "Indica las fechas de inicio y fin del periodo trabajado y los días de vacaciones al año de tu convenio. Te decimos cuántos días has generado y cuántos te quedan.",
+    howTo: {
+      title: "Cómo se calculan las vacaciones",
+      body: [
+        "El Estatuto de los Trabajadores fija un mínimo de 30 días naturales de vacaciones al año. Muchos convenios lo expresan en días laborables (normalmente 22) o mejoran esa cifra.",
+        "Si no has trabajado el año entero, te corresponde la parte proporcional: días al año × días trabajados ÷ 365. Medio año da unos 15 días naturales.",
+        "Las vacaciones no disfrutadas al terminar un contrato se pagan en el finiquito. Revisa siempre tu convenio, que manda sobre esta estimación.",
+      ],
+    },
+    faq: [
+      ["¿Cuántos días de vacaciones me tocan al año?", "Como mínimo 30 días naturales, según el artículo 38 del Estatuto de los Trabajadores. Tu convenio puede darte más."],
+      ["¿Se redondean los días?", "Depende de la empresa y del convenio; lo habitual es redondear hacia arriba a favor del trabajador, pero no es obligatorio."],
+    ],
+  },
+  {
+    slug: "horas-entre-dos-horas",
+    category: "fechas",
+    name: "Horas entre dos horas",
+    title: "Calcular las horas entre dos horas (también turnos de noche)",
+    description: "Calcula cuántas horas y minutos hay entre una hora de entrada y una de salida, descontando la pausa. Funciona con turnos que pasan la medianoche.",
+    intro: "Pon la hora de entrada, la de salida y, si quieres, los minutos de pausa. Te decimos cuánto tiempo has trabajado, también si el turno acaba al día siguiente.",
+    howTo: {
+      title: "Cómo se calcula",
+      body: [
+        "Se resta la hora de entrada a la de salida. Si la salida es más temprana que la entrada (por ejemplo, de 22:00 a 06:00), se entiende que el turno pasa la medianoche y se suman 24 horas.",
+        "Después se descuenta la pausa. Para sumar las horas de toda la semana, usa la calculadora de sumar horas.",
+      ],
+    },
+    faq: [
+      ["¿Cuántas horas hay de 9:00 a 17:30 con media hora de pausa?", "8 horas."],
+      ["¿Funciona con turnos de noche?", "Sí: de 22:00 a 06:00 son 8 horas."],
+    ],
+  },
+  {
+    slug: "calculadora-ritmo-running",
+    category: "salud",
+    name: "Ritmo de carrera",
+    title: "Calculadora de ritmo para correr (min/km) y predicción de tiempos",
+    description: "Calcula tu ritmo por kilómetro y tu velocidad a partir de la distancia y el tiempo, y descubre qué tiempo harías en 5K, 10K, media maratón y maratón.",
+    intro: "Escribe la distancia que has corrido y el tiempo. Te damos tu ritmo (min/km), tu velocidad media y los tiempos a ese ritmo en las distancias clásicas.",
+    howTo: {
+      title: "Cómo se calcula el ritmo",
+      body: [
+        "Ritmo = tiempo ÷ distancia. Si corres 10 km en 50 minutos, vas a 5:00 min/km, es decir, a 12 km/h.",
+        "Las predicciones suponen que mantienes el mismo ritmo durante toda la distancia. En distancias más largas, lo normal es ir algo más lento.",
+      ],
+    },
+    faq: [
+      ["¿Qué ritmo necesito para bajar de 50 minutos en 10K?", "Menos de 5:00 min/km."],
+      ["¿A qué ritmo se corre una maratón en 4 horas?", "A unos 5:41 min/km."],
+    ],
+  },
+  {
+    slug: "edad-perro-gato-anos-humanos",
+    category: "utilidades",
+    name: "Edad del perro y del gato",
+    title: "Edad de tu perro o gato en años humanos",
+    description: "Calcula la edad de tu perro o tu gato en años humanos según su edad y su tamaño, con la regla de los veterinarios y la fórmula científica más reciente.",
+    intro: "Elige si es perro o gato, su tamaño y su edad, y te decimos a cuántos años humanos equivale.",
+    howTo: {
+      title: "¿Un año de perro son siete humanos?",
+      body: [
+        "No. Esa regla es un mito: los perros maduran muy deprisa al principio. El primer año equivale a unos 15 años humanos y el segundo a unos 9 más.",
+        "A partir del tercer año, cada año suma unos 4 años humanos en perros pequeños, 5 en medianos y 6 en grandes, que envejecen antes. En los gatos se suele contar 4 años por año a partir del tercero.",
+        "Un estudio de 2020 basado en cambios en el ADN de labradores propuso la fórmula 16 × ln(edad) + 31, que también te mostramos. Son estimaciones: tu veterinario es quien mejor conoce a tu mascota.",
+      ],
+    },
+    faq: [
+      ["¿Cuántos años humanos tiene un perro de 5 años?", "Unos 36 si es pequeño, 39 si es mediano y 42 si es grande."],
+      ["¿Y un gato de 10 años?", "Unos 56 años humanos."],
     ],
   },
 ];
