@@ -605,3 +605,136 @@ export function edadMascota(años: number, especie: "perro" | "gato", tamaño: "
   const cientifica = especie === "perro" && años >= 1 ? 16 * Math.log(años) + 31 : NaN;
   return { tradicional, cientifica };
 }
+
+/* ---------- Sueldo neto 2026 (estimación con el procedimiento general de retenciones de la AEAT) ---------- */
+
+export const SS_2026 = { indefinido: 0.065, temporal: 0.0655, baseMaximaAnual: 5101.2 * 12 };
+const ESCALA_RETENCION: [number, number][] = [[12450, 0.19], [20200, 0.24], [35200, 0.3], [60000, 0.37], [300000, 0.45], [Infinity, 0.47]];
+
+function escala(base: number) {
+  let cuota = 0, desde = 0;
+  for (const [hasta, tipo] of ESCALA_RETENCION) {
+    if (base <= desde) break;
+    cuota += (Math.min(base, hasta) - desde) * tipo;
+    desde = hasta;
+  }
+  return cuota;
+}
+
+/** Reducción por obtención de rendimientos del trabajo (art. 20 LIRPF, vigente desde 2024). */
+export function reduccionTrabajo(rn: number) {
+  if (rn <= 14852) return 7302;
+  if (rn <= 17673.52) return 7302 - 1.75 * (rn - 14852);
+  if (rn < 19747.5) return 2364.34 - 1.14 * (rn - 17673.52);
+  return 0;
+}
+
+export type Situacion = "general" | "conyuge" | "monoparental";
+
+/** Límites por debajo de los cuales no se practica retención (art. 81 RIRPF): [0 hijos, 1 hijo, 2 o más]. */
+const LIMITE_EXENTO: Record<Situacion, [number, number, number]> = {
+  monoparental: [15876, 17644, 18694],
+  conyuge: [17197, 18130, 19262],
+  general: [15876, 16342, 16867],
+};
+
+export function sueldoNeto(opts: {
+  bruto: number; pagas: 12 | 14; contrato: "indefinido" | "temporal";
+  situacion: Situacion; hijos: number; menores3: number; hijosEnteros: boolean;
+}) {
+  const { bruto, pagas, contrato, situacion, hijos, menores3, hijosEnteros } = opts;
+  const ss = Math.min(bruto, SS_2026.baseMaximaAnual) * SS_2026[contrato];
+  const rnPrevio = bruto - ss;
+  const reduccion = Math.min(Math.max(0, reduccionTrabajo(rnPrevio)), Math.max(0, rnPrevio - 2000));
+  const base = Math.max(0, rnPrevio - 2000 - reduccion);
+
+  const porHijo = [2400, 2700, 4000, 4500];
+  let minDesc = 0;
+  for (let i = 0; i < hijos; i++) minDesc += porHijo[Math.min(i, 3)];
+  minDesc += Math.min(menores3, hijos) * 2800;
+  if (!hijosEnteros) minDesc /= 2;
+  const minimo = 5550 + minDesc;
+
+  let cuota = base > minimo ? escala(base) - escala(minimo) : 0;
+  const situ = situacion === "monoparental" && hijos === 0 ? "general" : situacion;
+  const exento = LIMITE_EXENTO[situ][Math.min(hijos, 2)];
+  if (bruto <= exento) cuota = 0;
+  cuota = Math.min(cuota, Math.max(0, 0.43 * (bruto - exento)));
+  const tipo = bruto > 0 ? Math.floor((cuota / bruto) * 10000) / 100 : 0; // la AEAT expresa el tipo con dos decimales
+  const irpf = (bruto * tipo) / 100;
+  const netoAnual = bruto - ss - irpf;
+  return { ss, irpf, tipo, netoAnual, netoMensual: netoAnual / pagas, brutoMensual: bruto / pagas, base, minimo };
+}
+
+/* ---------- Finiquito e indemnización ---------- */
+
+/** Meses de antigüedad entre dos fechas (ambas incluidas); un mes empezado cuenta como entero. */
+export function mesesAntiguedad(desde: string, hasta: string) {
+  if (hasta < desde) return 0;
+  const [y, m, d] = desde.split("-").map(Number);
+  const fin = parseFecha(hasta) + DIA; // exclusivo
+  let meses = 0;
+  while (true) {
+    const ny = y + Math.floor((m - 1 + meses + 1) / 12);
+    const nm = ((m - 1 + meses + 1) % 12) + 1;
+    const ultimo = new Date(Date.UTC(ny, nm, 0)).getUTCDate();
+    if (Date.UTC(ny, nm - 1, Math.min(d, ultimo)) > fin) break;
+    meses++;
+  }
+  const exacto = (() => {
+    const ny = y + Math.floor((m - 1 + meses) / 12);
+    const nm = ((m - 1 + meses) % 12) + 1;
+    const ultimo = new Date(Date.UTC(ny, nm, 0)).getUTCDate();
+    return Date.UTC(ny, nm - 1, Math.min(d, ultimo)) === fin;
+  })();
+  return exacto ? meses : meses + 1;
+}
+
+export type Extincion = "dimision" | "fin-temporal" | "objetivo" | "improcedente" | "disciplinario";
+
+export function indemnizacion(tipo: Extincion, salarioAnual: number, inicio: string, fin: string) {
+  const diario = salarioAnual / 365;
+  const mensual = salarioAnual / 12;
+  const corte = "2012-02-12";
+  let dias = 0;
+  if (tipo === "fin-temporal") dias = (12 * mesesAntiguedad(inicio, fin)) / 12;
+  if (tipo === "objetivo") dias = (20 * mesesAntiguedad(inicio, fin)) / 12; // tope: 12 mensualidades (abajo)
+  if (tipo === "improcedente") {
+    if (inicio < corte) {
+      const antes = (45 * mesesAntiguedad(inicio, sumarDias(corte, -1))) / 12;
+      const despues = fin >= corte ? (33 * mesesAntiguedad(corte, fin)) / 12 : 0;
+      // DT 11.ª ET: tope de 720 días, salvo que el tramo anterior ya supere esa cifra (entonces, ese tramo con un máximo de 42 mensualidades)
+      dias = antes > 720 ? Math.min(antes, 42 * 30) : Math.min(antes + despues, 720);
+    } else {
+      dias = Math.min((33 * mesesAntiguedad(inicio, fin)) / 12, 720);
+    }
+  }
+  const importe = tipo === "objetivo" ? Math.min(dias * diario, 12 * mensual) : dias * diario;
+  return { dias, importe, diario, topado: tipo === "objetivo" && dias * diario > 12 * mensual };
+}
+
+export function finiquito(opts: {
+  salarioAnual: number; inicio: string; fin: string; tipo: Extincion;
+  diasVacacionesAño: number; vacacionesDisfrutadas: number; pagasProrrateadas: boolean; diasMesPendientes: number;
+}) {
+  const { salarioAnual, inicio, fin, tipo, diasVacacionesAño, vacacionesDisfrutadas, pagasProrrateadas, diasMesPendientes } = opts;
+  const diario = salarioAnual / 365;
+  const salario = diasMesPendientes * diario;
+  const y = fin.slice(0, 4);
+  const desdeAño = inicio > `${y}-01-01` ? inicio : `${y}-01-01`;
+  const vac = vacacionesProporcionales(desdeAño, fin, diasVacacionesAño, vacacionesDisfrutadas);
+  const vacaciones = Math.max(0, vac.pendientes) * diario;
+  let pagas = 0;
+  if (!pagasProrrateadas) {
+    // Dos pagas extra de una mensualidad (salario anual ÷ 14) que se generan por semestres: enero-junio y julio-diciembre.
+    const semestre = Number(fin.slice(5, 7)) <= 6 ? `${y}-01-01` : `${y}-07-01`;
+    const desde = inicio > semestre ? inicio : semestre;
+    const finSem = Number(fin.slice(5, 7)) <= 6 ? `${y}-06-30` : `${y}-12-31`;
+    const total = Math.round((parseFecha(finSem) - parseFecha(semestre)) / DIA) + 1;
+    const hechos = Math.round((parseFecha(fin) - parseFecha(desde)) / DIA) + 1;
+    pagas = (salarioAnual / 14) * (hechos / total);
+  }
+  const ind = indemnizacion(tipo, salarioAnual, inicio, fin);
+  const totalFiniquito = salario + vacaciones + pagas;
+  return { salario, vacaciones, diasVacaciones: Math.max(0, vac.pendientes), pagas, indemnizacion: ind, totalFiniquito, total: totalFiniquito + ind.importe };
+}

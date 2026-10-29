@@ -1054,6 +1054,158 @@ function EdadMascota() {
   );
 }
 
+function SueldoNeto() {
+  const [bruto, setBruto] = useState("30000");
+  const [pagas, setPagas] = useState<"12" | "14">("14");
+  const [contrato, setContrato] = useState<"indefinido" | "temporal">("indefinido");
+  const [situacion, setSituacion] = useState<L.Situacion>("general");
+  const [hijos, setHijos] = useState("0");
+  const [menores3, setMenores3] = useState("0");
+  const [enteros, setEnteros] = useState(false);
+  const b = parse(bruto);
+  const r = b > 0 && b < 10_000_000
+    ? L.sueldoNeto({ bruto: b, pagas: Number(pagas) as 12 | 14, contrato, situacion, hijos: parseInt(hijos, 10) || 0, menores3: parseInt(menores3, 10) || 0, hijosEnteros: enteros })
+    : null;
+  const pct = (x: number) => (r ? `${num((x / b) * 100, 1)} %` : "");
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Salario bruto anual (€)" value={bruto} onChange={(e) => setBruto(e.target.value)} inputMode="decimal" />
+        <label className="block">
+          <span className="label">Número de pagas</span>
+          <select className="input" value={pagas} onChange={(e) => setPagas(e.target.value as "12" | "14")}>
+            <option value="14">14 pagas (2 extra)</option>
+            <option value="12">12 pagas (extras prorrateadas)</option>
+          </select>
+        </label>
+        <label className="block">
+          <span className="label">Tipo de contrato</span>
+          <select className="input" value={contrato} onChange={(e) => setContrato(e.target.value as "indefinido" | "temporal")}>
+            <option value="indefinido">Indefinido</option>
+            <option value="temporal">Temporal</option>
+          </select>
+        </label>
+        <label className="block">
+          <span className="label">Situación familiar</span>
+          <select className="input" value={situacion} onChange={(e) => setSituacion(e.target.value as L.Situacion)} aria-describedby="situacion-ayuda">
+            <option value="general">General</option>
+            <option value="conyuge">Cónyuge sin ingresos</option>
+            <option value="monoparental">Familia monoparental</option>
+          </select>
+        </label>
+        <p id="situacion-ayuda" className="text-xs text-stone-500 sm:col-span-2">
+          General: soltero/a, o casado/a con cónyuge con ingresos. Cónyuge sin ingresos: casado/a y tu pareja gana menos de 1.500 € al año.
+        </p>
+        <Field label="Hijos menores de 25 a tu cargo" value={hijos} onChange={(e) => setHijos(e.target.value)} inputMode="numeric" />
+        <Field label="De ellos, menores de 3 años" value={menores3} onChange={(e) => setMenores3(e.target.value)} inputMode="numeric" />
+      </div>
+      {(parseInt(hijos, 10) || 0) > 0 && (
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={enteros} onChange={(e) => setEnteros(e.target.checked)} className="h-4 w-4 accent-brand" />
+          Los hijos solo cuentan para mí (si no, se reparten con el otro progenitor)
+        </label>
+      )}
+      {r && (
+        <>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Big label={`Neto al mes (${pagas} pagas)`}>{eur(r.netoMensual)}</Big>
+            <Big label="Neto al año">{eur(r.netoAnual)}</Big>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <Stat label="Bruto al mes" value={eur(r.brutoMensual)} />
+            <Stat label="Seguridad Social" value={<>{eur(r.ss)} <span className="text-xs text-stone-500">{pct(r.ss)}</span></>} />
+            <Stat label="Retención IRPF" value={<>{eur(r.irpf)} <span className="text-xs text-stone-500">{num(r.tipo)} %</span></>} />
+            <Stat label="Te quedas con" value={pct(r.netoAnual)} />
+          </div>
+          <div className="flex h-4 overflow-hidden rounded-full text-[10px]">
+            <div className="bg-brand" style={{ width: `${(r.netoAnual / b) * 100}%` }} title="Neto" />
+            <div className="bg-sky-500" style={{ width: `${(r.ss / b) * 100}%` }} title="Seguridad Social" />
+            <div className="bg-amber-500" style={{ width: `${(r.irpf / b) * 100}%` }} title="IRPF" />
+          </div>
+          <div className="flex flex-wrap gap-4 text-xs text-stone-600">
+            <span><span className="mr-1 inline-block h-2 w-2 rounded-full bg-brand" />Neto</span>
+            <span><span className="mr-1 inline-block h-2 w-2 rounded-full bg-sky-500" />Seguridad Social</span>
+            <span><span className="mr-1 inline-block h-2 w-2 rounded-full bg-amber-500" />IRPF</span>
+          </div>
+          <p className="text-xs text-stone-500">Estimación orientativa con la normativa de 2026 (régimen general, territorio común). No incluye País Vasco ni Navarra.</p>
+        </>
+      )}
+    </div>
+  );
+}
+
+const EXTINCIONES: [L.Extincion, string][] = [
+  ["improcedente", "Despido improcedente"],
+  ["objetivo", "Despido objetivo (causas económicas, ERE...)"],
+  ["fin-temporal", "Fin de contrato temporal"],
+  ["dimision", "Baja voluntaria"],
+  ["disciplinario", "Despido disciplinario procedente"],
+];
+
+function Finiquito() {
+  const [salario, setSalario] = useState("24000");
+  const [inicio, setInicio] = useState("2021-03-01");
+  const [fin, setFin] = useState(today());
+  const [tipo, setTipo] = useState<L.Extincion>("improcedente");
+  const [vacAño, setVacAño] = useState("30");
+  const [vacDisf, setVacDisf] = useState("10");
+  const [prorr, setProrr] = useState(false);
+  const [diasMes, setDiasMes] = useState(String(Number(today().slice(8, 10))));
+  const s = parse(salario);
+  const ok = s > 0 && inicio && fin && inicio <= fin;
+  const r = ok
+    ? L.finiquito({ salarioAnual: s, inicio, fin, tipo, diasVacacionesAño: parse(vacAño) || 0, vacacionesDisfrutadas: parse(vacDisf) || 0, pagasProrrateadas: prorr, diasMesPendientes: Math.min(31, parseInt(diasMes, 10) || 0) })
+    : null;
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Salario bruto anual (€, con pagas extra)" value={salario} onChange={(e) => setSalario(e.target.value)} inputMode="decimal" />
+        <label className="block">
+          <span className="label">¿Cómo termina el contrato?</span>
+          <select className="input" value={tipo} onChange={(e) => setTipo(e.target.value as L.Extincion)}>
+            {EXTINCIONES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+          </select>
+        </label>
+        <Field label="Fecha de inicio del contrato" type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} />
+        <Field label="Último día de trabajo" type="date" value={fin} onChange={(e) => setFin(e.target.value)} />
+        <Field label="Días del último mes sin cobrar" value={diasMes} onChange={(e) => setDiasMes(e.target.value)} inputMode="numeric" />
+        <Field label="Vacaciones al año (días naturales)" value={vacAño} onChange={(e) => setVacAño(e.target.value)} inputMode="decimal" />
+        <Field label="Vacaciones ya disfrutadas este año" value={vacDisf} onChange={(e) => setVacDisf(e.target.value)} inputMode="decimal" />
+      </div>
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={prorr} onChange={(e) => setProrr(e.target.checked)} className="h-4 w-4 accent-brand" />
+        Cobro las pagas extra prorrateadas cada mes
+      </label>
+      {r ? (
+        <>
+          <Big label="Total a cobrar (finiquito + indemnización)">{eur(r.total)}</Big>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border border-stone-200 bg-white p-4">
+              <div className="font-bold">Finiquito: {eur(r.totalFiniquito)}</div>
+              <ul className="mt-2 space-y-1 text-sm text-stone-600">
+                <li className="flex justify-between gap-2"><span>Salario del último mes</span><b className="tabular-nums">{eur(r.salario)}</b></li>
+                <li className="flex justify-between gap-2"><span>Vacaciones no disfrutadas ({num(r.diasVacaciones, 1)} días)</span><b className="tabular-nums">{eur(r.vacaciones)}</b></li>
+                <li className="flex justify-between gap-2"><span>Parte proporcional pagas extra</span><b className="tabular-nums">{prorr ? "Ya cobradas" : eur(r.pagas)}</b></li>
+              </ul>
+            </div>
+            <div className="rounded-xl border border-stone-200 bg-white p-4">
+              <div className="font-bold">Indemnización: {eur(r.indemnizacion.importe)}</div>
+              <p className="mt-2 text-sm text-stone-600">
+                {r.indemnizacion.importe > 0
+                  ? `${num(r.indemnizacion.dias, 1)} días de salario a ${eur(r.indemnizacion.diario)} al día${r.indemnizacion.topado ? " (limitado a 12 mensualidades)" : ""}.`
+                  : "En una baja voluntaria o un despido disciplinario procedente no hay indemnización."}
+              </p>
+            </div>
+          </div>
+          <p className="text-xs text-stone-500">Importes brutos estimados con las reglas del Estatuto de los Trabajadores. Tu convenio puede mejorar estas cantidades. Revisa el documento antes de firmarlo.</p>
+        </>
+      ) : (
+        <Big>Revisa el salario y las fechas</Big>
+      )}
+    </div>
+  );
+}
+
 export const TOOL_COMPONENTS: Record<string, () => React.ReactNode> = {
   "numeros-a-letras": NumerosALetras,
   "letra-dni": LetraDni,
@@ -1091,6 +1243,8 @@ export const TOOL_COMPONENTS: Record<string, () => React.ReactNode> = {
   "horas-entre-dos-horas": HorasEntre,
   "calculadora-ritmo-running": RitmoRunning,
   "edad-perro-gato-anos-humanos": EdadMascota,
+  "calculadora-sueldo-neto": SueldoNeto,
+  "calculadora-finiquito": Finiquito,
 };
 
 /** Botons per compartir l'eina: el trànsit que porten els usuaris és gratis. */

@@ -15,7 +15,7 @@ export const CATEGORIES: Record<Category, string> = {
 /** Pàgina de categoria: /categoria/<slug>/ */
 export const CATEGORY_INFO: Record<Category, { slug: string; icon: string; title: string; intro: string }> = {
   calculos: { slug: "calculadoras", icon: "🧮", title: "Calculadoras online gratis", intro: "Porcentajes, IVA, descuentos, fracciones, regla de tres, media y mediana, áreas y perímetros... Las calculadoras que más se usan en el día a día y en clase, con la explicación de cada cálculo." },
-  finanzas: { slug: "finanzas", icon: "💶", title: "Calculadoras financieras", intro: "Calcula la cuota de tu hipoteca o de un préstamo personal, pasa de TIN a TAE, descubre cuánto crecerán tus ahorros con el interés compuesto o cuánto te costará un viaje en coche." },
+  finanzas: { slug: "finanzas", icon: "💶", title: "Calculadoras financieras", intro: "Calcula tu sueldo neto, tu finiquito, la cuota de tu hipoteca o de un préstamo personal, pasa de TIN a TAE, descubre cuánto crecerán tus ahorros con el interés compuesto o cuánto te costará un viaje en coche." },
   fechas: { slug: "fechas", icon: "📅", title: "Calculadoras de fechas y tiempo", intro: "Días entre dos fechas, edad exacta, semana del año, cuenta atrás, vacaciones proporcionales, horas entre dos horas o sumar las horas trabajadas." },
   salud: { slug: "salud", icon: "❤️", title: "Calculadoras de salud", intro: "Calcula tu índice de masa corporal (IMC), tu ritmo de carrera o la fecha probable de parto. Son orientativas: ante cualquier duda, consulta con un profesional sanitario." },
   documentos: { slug: "documentos", icon: "🪪", title: "Herramientas para documentos", intro: "Calcula la letra del DNI o NIE y comprueba si un IBAN es correcto antes de hacer una transferencia." },
@@ -33,10 +33,11 @@ export const ICONS: Record<string, string> = {
   "calculadora-fracciones": "½", "media-mediana-moda": "📊", "area-perimetro": "🔷", "conversor-binario-decimal": "💻",
   "calculadora-prestamo": "💳", "tin-tae": "🏛", "vacaciones-proporcionales": "🏖️", "horas-entre-dos-horas": "🕘",
   "calculadora-ritmo-running": "🏃", "edad-perro-gato-anos-humanos": "🐶",
+  "calculadora-sueldo-neto": "💼", "calculadora-finiquito": "📄",
 };
 
 /** Les que surten destacades a la portada. */
-export const POPULAR = ["calculadora-iva", "calculadora-porcentajes", "numeros-a-letras", "letra-dni", "calculadora-hipoteca", "dias-entre-fechas", "calculadora-imc", "semana-del-ano"];
+export const POPULAR = ["calculadora-sueldo-neto", "calculadora-iva", "calculadora-porcentajes", "calculadora-finiquito", "calculadora-hipoteca", "letra-dni", "numeros-a-letras", "dias-entre-fechas"];
 
 export type ToolMeta = {
   slug: string;
@@ -763,6 +764,52 @@ export const TOOLS: ToolMeta[] = [
     faq: [
       ["¿Cuántos años humanos tiene un perro de 5 años?", "Unos 36 si es pequeño, 39 si es mediano y 42 si es grande."],
       ["¿Y un gato de 10 años?", "Unos 56 años humanos."],
+    ],
+  },
+  {
+    slug: "calculadora-sueldo-neto",
+    category: "finanzas",
+    name: "Sueldo neto",
+    title: "Calculadora de sueldo neto 2026: de bruto a neto",
+    description: "Calcula tu sueldo neto mensual y anual en 2026 a partir del bruto: cotización a la Seguridad Social, retención de IRPF estimada y neto en 12 o 14 pagas.",
+    intro: "Escribe tu salario bruto anual, el número de pagas y tu situación familiar. Te estimamos cuánto pagas a la Seguridad Social, cuánto te retienen de IRPF y cuánto cobrarás limpio cada mes.",
+    howTo: {
+      title: "Cómo se pasa del sueldo bruto al neto",
+      body: [
+        "Primero se resta la cotización a la Seguridad Social. En 2026, el trabajador aporta el 6,50 % del sueldo con contrato indefinido (4,70 % de contingencias comunes, 1,55 % de desempleo, 0,10 % de formación profesional y 0,15 % del Mecanismo de Equidad Intergeneracional) o el 6,55 % con contrato temporal, con una base máxima de 5.101,20 € al mes.",
+        "Después se aplica la retención de IRPF. La empresa la calcula con el procedimiento de la Agencia Tributaria: al sueldo se le restan la Seguridad Social, 2.000 € de gastos y, en sueldos bajos, la reducción por rendimientos del trabajo; se aplica la escala de retención (del 19 % al 47 %) y se descuenta la parte que corresponde al mínimo personal y familiar (5.550 € más los hijos).",
+        "Si cobras poco, puede que no te retengan nada: por ejemplo, un soltero sin hijos con un único pagador no tiene retención si gana 15.876 € al año o menos.",
+        "La retención es un adelanto del impuesto: lo que pagas de verdad se ajusta en la declaración de la renta, donde también influyen la comunidad autónoma, otras rentas y deducciones.",
+      ],
+    },
+    faq: [
+      ["¿Cuánto es 30.000 € brutos en neto?", "Con contrato indefinido, soltero y sin hijos, unos 23.100 € al año: unos 1.650 € al mes en 14 pagas o unos 1.927 € en 12."],
+      ["¿Por qué cobro diferente de lo que dice la calculadora?", "Es una estimación: la retención real depende de datos que la empresa conoce (discapacidad, pensiones compensatorias, préstamo de vivienda anterior a 2013, regularizaciones durante el año…) y de tu convenio."],
+      ["¿Me sale más neto en 12 o en 14 pagas?", "Al año, lo mismo. En 14 pagas cobras menos cada mes, pero recibes dos pagas extra (normalmente en junio y diciembre)."],
+      ["¿El IRPF cambia según la comunidad autónoma?", "La retención de la nómina, no: se calcula con una escala única. El impuesto final de la declaración sí cambia según tu comunidad."],
+    ],
+  },
+  {
+    slug: "calculadora-finiquito",
+    category: "finanzas",
+    name: "Finiquito e indemnización",
+    title: "Calculadora de finiquito e indemnización por despido 2026",
+    description: "Calcula tu finiquito (salario pendiente, vacaciones no disfrutadas y pagas extra) y la indemnización por despido improcedente, objetivo o fin de contrato.",
+    intro: "Indica tu salario bruto anual, las fechas del contrato y cómo termina. Te estimamos el finiquito y, si te corresponde, la indemnización según el Estatuto de los Trabajadores.",
+    howTo: {
+      title: "Qué incluye el finiquito y cómo se calcula la indemnización",
+      body: [
+        "El finiquito liquida lo que la empresa te debe al terminar: los días trabajados del último mes, las vacaciones generadas y no disfrutadas, y la parte proporcional de las pagas extra si no las cobras prorrateadas. Te corresponde siempre, también si te vas tú.",
+        "La indemnización depende de cómo acaba el contrato. Fin de contrato temporal: 12 días de salario por año trabajado. Despido objetivo: 20 días por año, con un máximo de 12 mensualidades. Despido improcedente: 33 días por año, con un máximo de 720 días. Si te vas voluntariamente o el despido disciplinario es procedente, no hay indemnización.",
+        "Si empezaste a trabajar antes del 12 de febrero de 2012, el despido improcedente se calcula a 45 días por año hasta esa fecha y a 33 días desde entonces, con las reglas de la disposición transitoria 11.ª del Estatuto.",
+        "El salario diario es el salario bruto anual (con las pagas extra) dividido entre 365, y los periodos de menos de un año se prorratean por meses: un mes empezado cuenta como entero.",
+      ],
+    },
+    faq: [
+      ["¿Cuánto me corresponde por despido improcedente con 5 años de antigüedad?", "33 días por año: 165 días de salario. Con un sueldo de 24.000 € al año (65,75 € al día), unos 10.849 €."],
+      ["¿Me pagan el finiquito si me voy yo?", "Sí. El finiquito (salario pendiente, vacaciones y pagas extra) se cobra siempre; lo que no tienes es indemnización."],
+      ["¿El finiquito tributa?", "El finiquito sí: tiene retención de IRPF y Seguridad Social como una nómina. La indemnización por despido está exenta de IRPF hasta el importe obligatorio por ley (con un límite de 180.000 €)."],
+      ["¿Es exacta esta calculadora?", "Es una estimación con las reglas generales. Tu convenio, los complementos salariales o un acuerdo con la empresa pueden cambiar el resultado: revisa siempre el documento antes de firmarlo y, si dudas, consulta con un abogado laboralista o tu sindicato."],
     ],
   },
 ];
