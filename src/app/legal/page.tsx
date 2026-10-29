@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "@/lib/site";
 import { ResetConsent } from "@/components/Consent";
 import { Logo } from "@/components/Logo";
 
@@ -7,7 +8,7 @@ export const metadata = { title: "Avís legal, privacitat i condicions" };
 const OWNER = process.env.LEGAL_NAME || "[NOM I COGNOMS]";
 const NIF = process.env.LEGAL_NIF || "[NIF]";
 const ADDRESS = process.env.LEGAL_ADDRESS || "[ADREÇA FISCAL]";
-const EMAIL = "hola@apte.cat";
+const EMAIL = CONTACT_EMAIL;
 
 export default function Page() {
   return (

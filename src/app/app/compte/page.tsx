@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "@/lib/site";
 import { changePassword } from "@/app/app/actions";
 import { StateForm } from "@/components/StateForm";
 import { requireUser } from "@/lib/account";
@@ -17,7 +18,7 @@ export default async function Page() {
         </StateForm>
       </div>
       <p className="text-sm text-stone-600">
-        Factures, dubtes o problemes: <a className="underline" href="mailto:hola@apte.cat">hola@apte.cat</a>
+        Factures, dubtes o problemes: <a className="underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
       </p>
     </div>
   );

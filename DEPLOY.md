@@ -4,7 +4,14 @@ Calcula unes 2 hores. Ves apuntant les claus en una nota, que al pas 5 les engan
 
 ## 0. Domini (~15 €/any)
 
-Comprova si **apte.cat** està lliure (a dominis.cat, Dinahosting, Raiola o Gandi). No ho he pogut verificar des d'aquí. Si no ho està, prova `aptecat.cat`, `apte.app` o `correccioc1.cat`. Si el domini final és un altre, cerca `apte.cat` al codi (`hola@apte.cat` és a la landing, al compte i a la pàgina legal) i canvia'l.
+`apte.cat` probablement està agafat. **La marca pot continuar sent "Apte" amb qualsevol domini.** Per ordre de preferència, comprova a dominis.cat, Dinahosting o Raiola si hi ha lliure algun d'aquests:
+
+1. `correctorc1.cat`: conté exactament el que la gent busca a Google, i això ajuda a l'SEO i fa que hi cliquin més.
+2. `aprovac1.cat`: és curt i diu el que promet.
+3. `aptec1.cat`: manté la marca.
+4. `apte.app`: com a últim recurs.
+
+**No cal tocar el codi.** El domini i el correu de contacte surten de `NEXT_PUBLIC_APP_URL` (i `NEXT_PUBLIC_CONTACT_EMAIL`, si el vols diferent de `hola@el-teu-domini`). A totes aquestes guies, on posa `apte.cat`, posa-hi el teu domini.
 
 ## 1. Supabase: base de dades i comptes (15 min · gratis)
 

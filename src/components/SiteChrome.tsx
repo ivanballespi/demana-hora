@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "@/lib/site";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 
@@ -34,7 +35,7 @@ export function SiteFooter() {
         <div className="flex flex-col gap-1.5">
           <div className="font-bold text-ink">Apte</div>
           <Link href="/registre" className="hover:underline">Corregir la meva redacció</Link>
-          <a href="mailto:hola@apte.cat" className="hover:underline">hola@apte.cat</a>
+          <a href={`mailto:${CONTACT_EMAIL}`} className="hover:underline">{CONTACT_EMAIL}</a>
           <Link href="/legal" className="hover:underline">Avís legal i privacitat</Link>
         </div>
       </div>
