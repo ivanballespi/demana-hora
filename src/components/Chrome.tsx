@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CONTACT_EMAIL, SITE_NAME, SITE_URL } from "@/lib/site";
-import { CATEGORIES, CATEGORY_INFO, ICONS, TOOLS, type Category } from "@/tools/registry";
+import { CATEGORIES, CATEGORY_INFO, ICONS, TOOLS, type Category, toolsIn } from "@/tools/registry";
 
 const CATS = Object.keys(CATEGORIES) as Category[];
 
@@ -18,14 +18,14 @@ export function Header() {
     <header className="sticky top-0 z-30 border-b border-stone-200/80 bg-white/85 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <Logo />
-        <nav className="hidden items-center gap-1 text-sm md:flex">
+        <nav className="hidden items-center gap-0.5 text-sm xl:flex">
           {CATS.map((c) => (
             <Link key={c} href={`/categoria/${CATEGORY_INFO[c].slug}/`} className="rounded-lg px-2.5 py-1.5 font-medium text-stone-600 hover:bg-stone-100 hover:text-ink">
               {CATEGORIES[c]}
             </Link>
           ))}
         </nav>
-        <Link href="/#herramientas" className="btn-primary py-2 md:hidden">Herramientas</Link>
+        <Link href="/#herramientas" className="btn-primary py-2 xl:hidden">Herramientas</Link>
       </div>
     </header>
   );
@@ -41,23 +41,22 @@ export function Footer() {
             {TOOLS.length} calculadoras y herramientas gratis en español. Sin registro, sin instalar nada y sin que tus datos salgan de tu navegador.
           </p>
         </div>
-        {CATS.slice(0, 3).map((c) => (
-          <div key={c}>
-            <Link href={`/categoria/${CATEGORY_INFO[c].slug}/`} className="font-bold hover:underline">{CATEGORY_INFO[c].icon} {CATEGORIES[c]}</Link>
-            <ul className="mt-3 space-y-2">
-              {TOOLS.filter((t) => t.category === c).map((t) => (
-                <li key={t.slug}><Link href={`/${t.slug}/`} className="text-stone-600 hover:text-brand">{t.name}</Link></li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        <div className="grid gap-6 sm:col-span-1 lg:col-span-3 lg:grid-cols-3">
+          {CATS.map((c) => (
+            <div key={c}>
+              <Link href={`/categoria/${CATEGORY_INFO[c].slug}/`} className="font-bold hover:underline">{CATEGORY_INFO[c].icon} {CATEGORIES[c]}</Link>
+              <ul className="mt-2 space-y-1.5">
+                {toolsIn(c).map((t) => (
+                  <li key={t.slug}><Link href={`/${t.slug}/`} className="text-stone-600 hover:text-brand">{t.name}</Link></li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
       <div className="mx-auto flex max-w-6xl flex-wrap justify-between gap-3 border-t border-stone-100 px-4 py-6 text-xs text-stone-500">
         <span>© {new Date().getFullYear()} {SITE_NAME}</span>
         <div className="flex flex-wrap gap-4">
-          {CATS.slice(3).map((c) => (
-            <Link key={c} href={`/categoria/${CATEGORY_INFO[c].slug}/`} className="hover:underline">{CATEGORIES[c]}</Link>
-          ))}
           <Link href="/sobre-nosotros/" className="hover:underline">Sobre nosotros</Link>
           <Link href="/contacto/" className="hover:underline">Contacto</Link>
           <Link href="/privacidad/" className="hover:underline">Privacidad y cookies</Link>

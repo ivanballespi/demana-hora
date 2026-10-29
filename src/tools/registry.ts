@@ -1,27 +1,31 @@
 // Metadades i text SEO de cada eina. El component interactiu és a ./components.
 
-export type Category = "texto" | "documentos" | "fechas" | "calculos" | "finanzas" | "utilidades" | "salud";
+export type Category = "dinero" | "trabajo" | "fechas" | "estudios" | "documentos" | "salud" | "utilidades";
 
+/** Ordre i nom curt de les categories (menú, portada i peu). */
 export const CATEGORIES: Record<Category, string> = {
-  calculos: "Cálculos rápidos",
-  finanzas: "Finanzas",
-  fechas: "Fechas y tiempo",
-  salud: "Salud",
-  documentos: "Documentos",
-  texto: "Texto",
+  dinero: "Dinero",
+  trabajo: "Trabajo y nómina",
+  fechas: "Fechas",
+  estudios: "Estudios",
+  documentos: "Documentos y texto",
+  salud: "Salud y deporte",
   utilidades: "Utilidades",
 };
 
 /** Pàgina de categoria: /categoria/<slug>/ */
 export const CATEGORY_INFO: Record<Category, { slug: string; icon: string; title: string; intro: string }> = {
-  calculos: { slug: "calculadoras", icon: "🧮", title: "Calculadoras online gratis", intro: "Porcentajes, IVA, descuentos, fracciones, regla de tres, media y mediana, áreas y perímetros... Las calculadoras que más se usan en el día a día y en clase, con la explicación de cada cálculo." },
-  finanzas: { slug: "finanzas", icon: "💶", title: "Calculadoras financieras", intro: "Calcula tu sueldo neto, tu finiquito, la cuota de tu hipoteca o de un préstamo personal, pasa de TIN a TAE, descubre cuánto crecerán tus ahorros con el interés compuesto o cuánto te costará un viaje en coche." },
-  fechas: { slug: "fechas", icon: "📅", title: "Calculadoras de fechas y tiempo", intro: "Días entre dos fechas, edad exacta, semana del año, cuenta atrás, vacaciones proporcionales, horas entre dos horas o sumar las horas trabajadas." },
-  salud: { slug: "salud", icon: "❤️", title: "Calculadoras de salud", intro: "Calcula tu índice de masa corporal (IMC), tu ritmo de carrera o la fecha probable de parto. Son orientativas: ante cualquier duda, consulta con un profesional sanitario." },
-  documentos: { slug: "documentos", icon: "🪪", title: "Herramientas para documentos", intro: "Calcula la letra del DNI o NIE y comprueba si un IBAN es correcto antes de hacer una transferencia." },
-  texto: { slug: "texto", icon: "✍️", title: "Herramientas de texto", intro: "Convierte números a letras, cuenta palabras y caracteres, cambia mayúsculas y minúsculas, pasa números a romanos o entre binario, decimal y hexadecimal." },
+  dinero: { slug: "finanzas", icon: "💶", title: "Calculadoras de dinero y finanzas", intro: "IVA, porcentajes, descuentos, hipoteca, préstamos, TIN y TAE, interés compuesto o lo que te costará un viaje en coche. Las cuentas de cada día, con la explicación de cada cálculo." },
+  trabajo: { slug: "trabajo", icon: "💼", title: "Calculadoras de trabajo y nómina", intro: "Calcula tu sueldo neto, el finiquito y la indemnización por despido, las vacaciones que te corresponden o las horas que has trabajado." },
+  fechas: { slug: "fechas", icon: "📅", title: "Calculadoras de fechas y tiempo", intro: "Días entre dos fechas, edad exacta, semana del año, sumar días a una fecha o cuentas atrás para las fechas más esperadas." },
+  estudios: { slug: "matematicas", icon: "🎓", title: "Calculadoras para estudiar: matemáticas", intro: "Fracciones, regla de tres, media y mediana, áreas y perímetros, nota media, MCD y mcm, números romanos o binarios. Con la explicación de cada fórmula." },
+  documentos: { slug: "documentos", icon: "🪪", title: "Documentos y texto", intro: "Calcula la letra del DNI, comprueba un IBAN, pasa números a letras para facturas y cheques, cuenta palabras o cambia mayúsculas y minúsculas." },
+  salud: { slug: "salud", icon: "❤️", title: "Calculadoras de salud y deporte", intro: "Calcula tu índice de masa corporal (IMC), tu ritmo de carrera o la fecha probable de parto. Son orientativas: ante cualquier duda, consulta con un profesional sanitario." },
   utilidades: { slug: "utilidades", icon: "🛠️", title: "Utilidades online", intro: "Genera contraseñas seguras y números aleatorios para sorteos, convierte unidades de medida o calcula la edad de tu perro o gato en años humanos." },
 };
+
+/** Adreces de categories antigues → on s'han mogut les seves eines. */
+export const LEGACY_CATEGORY_SLUGS: Record<string, string> = { calculadoras: "/", texto: "/categoria/documentos/" };
 
 export const ICONS: Record<string, string> = {
   "numeros-a-letras": "🔤", "letra-dni": "🪪", "validar-iban": "🏦", "dias-entre-fechas": "📆", "calculadora-edad": "🎂",
@@ -53,7 +57,7 @@ export type ToolMeta = {
 export const TOOLS: ToolMeta[] = [
   {
     slug: "numeros-a-letras",
-    category: "texto",
+    category: "documentos",
     name: "Números a letras",
     title: "Convertir números a letras (también en euros)",
     description: "Convierte cualquier número a letras en español al instante: cantidades en euros con céntimos para facturas, cheques y contratos. Gratis y sin registro.",
@@ -177,7 +181,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "sumar-horas",
-    category: "fechas",
+    category: "trabajo",
     name: "Sumar horas",
     title: "Sumar horas y minutos (calculadora de horas trabajadas)",
     description: "Suma horas y minutos fácilmente: calcula las horas trabajadas de la semana, horas extra o tiempos totales. Formato 8:30, 7h45...",
@@ -197,7 +201,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "calculadora-porcentajes",
-    category: "calculos",
+    category: "dinero",
     name: "Porcentajes",
     title: "Calculadora de porcentajes: cuánto es el X% de un número",
     description: "Calcula porcentajes al instante: el X% de una cantidad, qué porcentaje representa un número y el aumento o descuento porcentual entre dos valores.",
@@ -217,7 +221,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "calculadora-iva",
-    category: "calculos",
+    category: "dinero",
     name: "Calculadora de IVA",
     title: "Calculadora de IVA: añadir o quitar el IVA (21%, 10%, 4%)",
     description: "Suma o quita el IVA a cualquier importe con los tipos de España (21%, 10%, 4%) o uno personalizado. Calcula base imponible, cuota y total.",
@@ -237,7 +241,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "regla-de-tres",
-    category: "calculos",
+    category: "estudios",
     name: "Regla de tres",
     title: "Calculadora de regla de tres simple (directa e inversa)",
     description: "Resuelve cualquier regla de tres simple directa o inversa al instante, con la explicación paso a paso.",
@@ -255,7 +259,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "calculadora-nota-media",
-    category: "calculos",
+    category: "estudios",
     name: "Nota media",
     title: "Calculadora de nota media ponderada",
     description: "Calcula tu nota media o tu media ponderada por créditos o porcentajes. Para el instituto, la universidad, la EBAU o las oposiciones.",
@@ -274,7 +278,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "calculadora-hipoteca",
-    category: "finanzas",
+    category: "dinero",
     name: "Calculadora de hipoteca",
     title: "Calculadora de hipoteca: cuota mensual e intereses",
     description: "Calcula la cuota mensual de tu hipoteca, los intereses totales y el cuadro de amortización año a año. Sistema francés, el habitual en España.",
@@ -295,7 +299,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "interes-compuesto",
-    category: "finanzas",
+    category: "dinero",
     name: "Interés compuesto",
     title: "Calculadora de interés compuesto con aportaciones mensuales",
     description: "Calcula cuánto crecerán tus ahorros con interés compuesto y aportaciones mensuales. Ve la evolución año a año.",
@@ -315,7 +319,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "contador-palabras",
-    category: "texto",
+    category: "documentos",
     name: "Contador de palabras",
     title: "Contador de palabras y caracteres online",
     description: "Cuenta palabras, caracteres (con y sin espacios), frases y párrafos de cualquier texto al instante. Incluye tiempo de lectura.",
@@ -334,7 +338,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "convertir-mayusculas-minusculas",
-    category: "texto",
+    category: "documentos",
     name: "Mayúsculas y minúsculas",
     title: "Convertir texto a mayúsculas, minúsculas o tipo título",
     description: "Pasa cualquier texto a MAYÚSCULAS, minúsculas, Tipo Título o tipo oración con un clic, y cópialo al instante.",
@@ -353,7 +357,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "numeros-romanos",
-    category: "texto",
+    category: "estudios",
     name: "Números romanos",
     title: "Conversor de números romanos (y a números normales)",
     description: "Convierte números a números romanos y números romanos a números arábigos del 1 al 3999. Con explicación de las reglas.",
@@ -434,7 +438,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "mcd-mcm",
-    category: "calculos",
+    category: "estudios",
     name: "MCD y MCM",
     title: "Calculadora de máximo común divisor y mínimo común múltiplo",
     description: "Calcula el máximo común divisor (MCD) y el mínimo común múltiplo (mcm) de dos o más números al instante, con la explicación.",
@@ -454,7 +458,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "calculadora-descuentos",
-    category: "calculos",
+    category: "dinero",
     name: "Calculadora de descuentos",
     title: "Calculadora de descuentos: precio final con rebaja",
     description: "Calcula el precio final de un producto con descuento y cuánto te ahorras. También con descuentos acumulados (rebajas + cupón).",
@@ -473,7 +477,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "coste-viaje-gasolina",
-    category: "finanzas",
+    category: "dinero",
     name: "Coste de un viaje",
     title: "Calculadora de gasolina: cuánto cuesta un viaje en coche",
     description: "Calcula cuánto te costará un viaje en coche según los kilómetros, el consumo y el precio del combustible, y cuánto toca pagar a cada uno.",
@@ -571,7 +575,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "calculadora-fracciones",
-    category: "calculos",
+    category: "estudios",
     name: "Calculadora de fracciones",
     title: "Calculadora de fracciones: sumar, restar, multiplicar y dividir",
     description: "Suma, resta, multiplica y divide fracciones y obtén el resultado simplificado, como número mixto y en decimal. Con la explicación paso a paso.",
@@ -591,7 +595,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "media-mediana-moda",
-    category: "calculos",
+    category: "estudios",
     name: "Media, mediana y moda",
     title: "Calcular la media, la mediana y la moda (y la desviación típica)",
     description: "Pega una lista de números y calcula al instante la media, la mediana, la moda, el rango y la desviación típica. Para estadística del colegio o del trabajo.",
@@ -611,7 +615,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "area-perimetro",
-    category: "calculos",
+    category: "estudios",
     name: "Área y perímetro",
     title: "Calculadora de área y perímetro: cuadrado, rectángulo, círculo y triángulo",
     description: "Calcula el área y el perímetro de un cuadrado, un rectángulo, un círculo o un triángulo (con la fórmula de Herón). Con las fórmulas explicadas.",
@@ -631,7 +635,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "conversor-binario-decimal",
-    category: "texto",
+    category: "estudios",
     name: "Binario, decimal y hexadecimal",
     title: "Conversor binario, decimal, octal y hexadecimal",
     description: "Convierte números entre binario, decimal, octal y hexadecimal al instante, incluso números muy grandes. Para clase, programación y electrónica.",
@@ -650,7 +654,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "calculadora-prestamo",
-    category: "finanzas",
+    category: "dinero",
     name: "Calculadora de préstamos",
     title: "Calculadora de préstamos personales: cuota mensual e intereses",
     description: "Calcula la cuota mensual de un préstamo personal o para el coche, los intereses totales y lo que pagarás en total, según el importe, el interés y los meses.",
@@ -670,7 +674,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "tin-tae",
-    category: "finanzas",
+    category: "dinero",
     name: "TIN a TAE",
     title: "Calculadora TIN a TAE (y de TAE a TIN)",
     description: "Convierte el TIN de un préstamo, hipoteca o depósito a TAE y al revés, según la frecuencia de pago. Entiende cuánto cuesta o rinde de verdad.",
@@ -690,7 +694,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "vacaciones-proporcionales",
-    category: "fechas",
+    category: "trabajo",
     name: "Vacaciones proporcionales",
     title: "Calculadora de vacaciones proporcionales: días que te corresponden",
     description: "Calcula cuántos días de vacaciones te corresponden según el tiempo trabajado, para un contrato que empieza o acaba a mitad de año o para el finiquito.",
@@ -710,7 +714,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "horas-entre-dos-horas",
-    category: "fechas",
+    category: "trabajo",
     name: "Horas entre dos horas",
     title: "Calcular las horas entre dos horas (también turnos de noche)",
     description: "Calcula cuántas horas y minutos hay entre una hora de entrada y una de salida, descontando la pausa. Funciona con turnos que pasan la medianoche.",
@@ -768,7 +772,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "calculadora-sueldo-neto",
-    category: "finanzas",
+    category: "trabajo",
     name: "Sueldo neto",
     title: "Calculadora de sueldo neto 2026: de bruto a neto",
     description: "Calcula tu sueldo neto mensual y anual en 2026 a partir del bruto: cotización a la Seguridad Social, retención de IRPF estimada y neto en 12 o 14 pagas.",
@@ -791,7 +795,7 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     slug: "calculadora-finiquito",
-    category: "finanzas",
+    category: "trabajo",
     name: "Finiquito e indemnización",
     title: "Calculadora de finiquito e indemnización por despido 2026",
     description: "Calcula tu finiquito (salario pendiente, vacaciones no disfrutadas y pagas extra) y la indemnización por despido improcedente, objetivo o fin de contrato.",
@@ -815,3 +819,9 @@ export const TOOLS: ToolMeta[] = [
 ];
 
 export const toolBySlug = (slug: string) => TOOLS.find((t) => t.slug === slug);
+
+/** Eines d'una categoria, amb les més usades primer i després en l'ordre del registre. */
+export function toolsIn(cat: Category) {
+  const rank = (slug: string) => (POPULAR.includes(slug) ? POPULAR.indexOf(slug) : POPULAR.length);
+  return TOOLS.filter((t) => t.category === cat).sort((a, b) => rank(a.slug) - rank(b.slug));
+}

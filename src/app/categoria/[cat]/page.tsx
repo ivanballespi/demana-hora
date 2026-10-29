@@ -3,15 +3,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Footer, Header, JsonLd, ToolCard } from "@/components/Chrome";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
-import { CATEGORY_INFO, TOOLS, type Category } from "@/tools/registry";
+import { CATEGORY_INFO, LEGACY_CATEGORY_SLUGS, type Category, toolsIn } from "@/tools/registry";
 
 export const dynamicParams = false;
-export const generateStaticParams = () => Object.values(CATEGORY_INFO).map((c) => ({ cat: c.slug }));
+export const generateStaticParams = () => [...Object.values(CATEGORY_INFO).map((c) => c.slug), ...Object.keys(LEGACY_CATEGORY_SLUGS)].map((cat) => ({ cat }));
 
 const bySlug = (slug: string) => (Object.entries(CATEGORY_INFO) as [Category, (typeof CATEGORY_INFO)[Category]][]).find(([, v]) => v.slug === slug);
 
 export async function generateMetadata({ params }: PageProps<"/categoria/[cat]">): Promise<Metadata> {
-  const found = bySlug((await params).cat);
+  const slug = (await params).cat;
+  if (LEGACY_CATEGORY_SLUGS[slug]) return { title: "Página movida", robots: { index: false }, alternates: { canonical: `${SITE_URL}${LEGACY_CATEGORY_SLUGS[slug]}` } };
+  const found = bySlug(slug);
   if (!found) return {};
   const [, info] = found;
   const url = `${SITE_URL}/categoria/${info.slug}/`;
@@ -19,10 +21,22 @@ export async function generateMetadata({ params }: PageProps<"/categoria/[cat]">
 }
 
 export default async function Page({ params }: PageProps<"/categoria/[cat]">) {
-  const found = bySlug((await params).cat);
+  const slug = (await params).cat;
+  const moved = LEGACY_CATEGORY_SLUGS[slug];
+  if (moved) {
+    // Categoria antiga: redirigim (la web és estàtica, així que es fa amb meta refresh).
+    return (
+      <main className="mx-auto max-w-xl px-4 py-20 text-center">
+        <meta httpEquiv="refresh" content={`0; url=${moved}`} />
+        <h1 className="text-2xl font-bold">Esta sección se ha movido</h1>
+        <Link href={moved} className="btn-primary mt-6">Ir a la nueva página</Link>
+      </main>
+    );
+  }
+  const found = bySlug(slug);
   if (!found) notFound();
   const [cat, info] = found;
-  const tools = TOOLS.filter((t) => t.category === cat);
+  const tools = toolsIn(cat);
   const url = `${SITE_URL}/categoria/${info.slug}/`;
   return (
     <div className="flex flex-1 flex-col">
