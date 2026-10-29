@@ -1,4 +1,4 @@
-:HL["/_next/static/chunks/0l701cbj1meih.css","style"]
+:HL["/_next/static/chunks/430igfp5gdq2v.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
-1:[["children",{"s":{"n":"tool","t":"d","k":"calculadora-edad","s":["ads.txt","aviso-legal","categoria","contacto","cuanto-falta-para","privacidad","sobre-nosotros"]},"h":65632,"c":"$Q2"}]]
-0:{"b":"Kw6CwA7EBo6gQDSn3ndqk","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+1:[["children",{"s":{"n":"tool","t":"d","k":"calculadora-edad","s":["ads.txt","aviso-legal","categoria","contacto","cuanto-falta-para","privacidad","sobre-nosotros","sueldo-neto"]},"h":65632,"c":"$Q2"}]]
+0:{"b":"ik2DgljrnhkjXw8CaQ_B7","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}

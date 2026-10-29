@@ -1,1 +1,0 @@
-self.__SSG_MANIFEST=new Set(["\u002F[tool]","\u002Fcategoria\u002F[cat]","\u002Fcuanto-falta-para\u002F[evento]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()

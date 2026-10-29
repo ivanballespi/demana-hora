@@ -1,0 +1,5 @@
+:HL["/_next/static/chunks/430igfp5gdq2v.css","style"]
+3:[["children",{"s":"__PAGE__","h":160}]]
+2:[["children",{"s":{"n":"cantidad","t":"d","k":"15000-euros-brutos","s":[]},"h":65632,"c":"$Q3"}]]
+1:[["children",{"s":"sueldo-neto","h":131168,"c":"$Q2"}]]
+0:{"b":"ik2DgljrnhkjXw8CaQ_B7","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
