@@ -1,14 +1,33 @@
-# demana-hora 
+# Apte
 
-**demana-hora** és una solució robusta de gestió de cites i serveis desenvolupada en **PHP Vanilla**. Aquest projecte neix de la voluntat de crear una eina de proximitat, eficient i programada seguint els estàndards més alts d'arquitectura de software (MVC).
+Corrector de redaccions dels exàmens de català **C1 i C2** amb IA (català, valencià i balear).
+Enganxes la redacció i, en un minut, tens:
 
-## Objectiu del Projecte
-Demostrar la viabilitat de sistemes professionals sense dependències de tercers, posant el focus en la seguretat, la neteja del codi i una experiència d'usuari fluida en català.
+- la nota estimada sobre 40, amb el veredicte (apte, al límit o no apte)
+- els 5 criteris oficials, amb una banda de l'A a l'E
+- cada error subratllat al text, amb la correcció i l'explicació
+- una versió millorada del teu text
 
-## Especificacions Tècniques
-- **Lògica:** PHP 8.x amb arquitectura MVC pura.
-- **Dades:** MySQL amb el motor InnoDB per a integritat referencial.
-- **Seguretat:** Sessions protegides, hashing de seguretat i defensa contra SQLi/XSS.
+**Model de negoci:** la primera correcció és gratis; després, 7,90 € per 5 correccions o 14,90 € per 30 dies il·limitats. És pagament únic, sense subscripcions.
 
----
-*Projecte per al portfolio de desenvolupament professional.*
+## Stack
+
+Next.js 16 · Supabase (Auth + Postgres) · Claude Opus 5.5 (amb sortida estructurada) · Stripe Checkout · Vercel.
+
+- `src/lib/grader.ts`: el prompt i l'esquema de la correcció. **Aquí és on s'afina la qualitat.**
+- `supabase/schema.sql`: les taules i les funcions atòmiques per gastar i afegir crèdits.
+- `src/app/api/corrections`: crea la correcció. Si la IA falla, retorna el crèdit.
+- `src/app/api/stripe/webhook`: aplica les compres. És idempotent, i la pàgina de tornada de Stripe també les aplica.
+
+## Desenvolupament
+
+```bash
+cp .env.example .env.local
+npm install
+npm run dev
+```
+
+## Documents
+
+- **[DEPLOY.md](DEPLOY.md)**: guia de llançament pas a pas
+- **[docs/VENDES.md](docs/VENDES.md)**: mercat, canals i missatges per aconseguir les primeres vendes
