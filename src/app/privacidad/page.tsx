@@ -1,9 +1,8 @@
 import { Footer, Header } from "@/components/Chrome";
-import { CONTACT_EMAIL, SITE_NAME, SITE_URL } from "@/lib/site";
+import { CONTACT_EMAIL, LEGAL_NAME, LEGAL_NIF, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata = { title: "Política de privacidad y cookies", alternates: { canonical: `${SITE_URL}/privacidad/` } };
 
-const OWNER = process.env.NEXT_PUBLIC_LEGAL_NAME || "[NOMBRE DEL TITULAR]";
 
 export default function Page() {
   return (
@@ -12,7 +11,7 @@ export default function Page() {
       <main className="mx-auto w-full max-w-3xl flex-1 space-y-4 px-4 py-10 leading-relaxed text-stone-700 [&_h2]:pt-4 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-ink">
         <h1 className="text-3xl font-extrabold text-ink">Política de privacidad y cookies</h1>
         <h2>Responsable</h2>
-        <p>El responsable de {SITE_NAME} es {OWNER}. Contacto: {CONTACT_EMAIL}.</p>
+        <p>El responsable de {SITE_NAME} es {LEGAL_NAME} (NIF {LEGAL_NIF}). Contacto: {CONTACT_EMAIL}.</p>
         <h2>Datos que tratamos</h2>
         <p>
           Las herramientas de {SITE_NAME} funcionan en tu navegador: los números, textos, DNI, IBAN o fechas que escribes
