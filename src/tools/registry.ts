@@ -19,7 +19,7 @@ export const CATEGORY_INFO: Record<Category, { slug: string; icon: string; title
   trabajo: { slug: "trabajo", icon: "💼", title: "Calculadoras de trabajo y nómina", intro: "Calcula tu sueldo neto, el finiquito y la indemnización por despido, las vacaciones que te corresponden o las horas que has trabajado." },
   fechas: { slug: "fechas", icon: "📅", title: "Calculadoras de fechas y tiempo", intro: "Días entre dos fechas, edad exacta, semana del año, sumar días a una fecha o cuentas atrás para las fechas más esperadas." },
   estudios: { slug: "matematicas", icon: "🎓", title: "Calculadoras para estudiar: matemáticas", intro: "Fracciones, regla de tres, media y mediana, áreas y perímetros, nota media, MCD y mcm, números romanos o binarios. Con la explicación de cada fórmula." },
-  documentos: { slug: "documentos", icon: "🪪", title: "Documentos y texto", intro: "Calcula la letra del DNI, comprueba un IBAN, pasa números a letras para facturas y cheques, cuenta palabras o cambia mayúsculas y minúsculas." },
+  documentos: { slug: "documentos", icon: "🪪", title: "Documentos y texto", intro: "Calcula la letra del DNI, comprueba un IBAN, pasa números a letras para facturas y cheques, cuenta palabras, cambia mayúsculas y minúsculas o analiza si un texto parece escrito con IA." },
   salud: { slug: "salud", icon: "❤️", title: "Calculadoras de salud y deporte", intro: "Calcula tu índice de masa corporal (IMC), tu ritmo de carrera o la fecha probable de parto. Son orientativas: ante cualquier duda, consulta con un profesional sanitario." },
   utilidades: { slug: "utilidades", icon: "🛠️", title: "Utilidades online", intro: "Genera contraseñas seguras y números aleatorios para sorteos, convierte unidades de medida o calcula la edad de tu perro o gato en años humanos." },
 };
@@ -37,7 +37,7 @@ export const ICONS: Record<string, string> = {
   "calculadora-fracciones": "½", "media-mediana-moda": "📊", "area-perimetro": "🔷", "conversor-binario-decimal": "💻",
   "calculadora-prestamo": "💳", "tin-tae": "🏛", "vacaciones-proporcionales": "🏖️", "horas-entre-dos-horas": "🕘",
   "calculadora-ritmo-running": "🏃", "edad-perro-gato-anos-humanos": "🐶",
-  "calculadora-sueldo-neto": "💼", "calculadora-finiquito": "📄",
+  "calculadora-sueldo-neto": "💼", "calculadora-finiquito": "📄", "detector-texto-ia": "🤖",
 };
 
 /** Les que surten destacades a la portada. */
@@ -814,6 +814,28 @@ export const TOOLS: ToolMeta[] = [
       ["¿Me pagan el finiquito si me voy yo?", "Sí. El finiquito (salario pendiente, vacaciones y pagas extra) se cobra siempre; lo que no tienes es indemnización."],
       ["¿El finiquito tributa?", "El finiquito sí: tiene retención de IRPF y Seguridad Social como una nómina. La indemnización por despido está exenta de IRPF hasta el importe obligatorio por ley (con un límite de 180.000 €)."],
       ["¿Es exacta esta calculadora?", "Es una estimación con las reglas generales. Tu convenio, los complementos salariales o un acuerdo con la empresa pueden cambiar el resultado: revisa siempre el documento antes de firmarlo y, si dudas, consulta con un abogado laboralista o tu sindicato."],
+    ],
+  },
+  {
+    slug: "detector-texto-ia",
+    category: "documentos",
+    name: "Detector de texto IA",
+    title: "Detector de IA: ¿este texto está escrito con inteligencia artificial?",
+    description: "Analiza un texto en español y estima qué porcentaje de señales de escritura con IA (ChatGPT, Gemini, Claude…) contiene, con la explicación de cada señal. Gratis y privado.",
+    intro: "Pega el texto que quieres comprobar (al menos 80 palabras) y te diremos qué porcentaje de señales de escritura con IA tiene, explicando de dónde sale el resultado.",
+    howTo: {
+      title: "Qué señales analiza",
+      body: [
+        "Regularidad de las frases: las personas mezclan frases cortas y largas; la IA tiende a escribir frases de longitud muy parecida.",
+        "Expresiones típicas: «es importante destacar», «juega un papel crucial», «en conclusión», «no solo… sino también»… Los modelos de IA las repiten mucho más que una persona.",
+        "Párrafos de tamaño parecido y ausencia de marcas personales: primera persona, exclamaciones, puntos suspensivos o un tono informal suelen indicar un texto humano.",
+        "Importante: ningún detector de IA es fiable, ni siquiera los de pago (OpenAI retiró el suyo por su baja precisión). Un texto humano muy formal puede dar un porcentaje alto, y un texto de IA retocado puede dar uno bajo. Úsalo como orientación, nunca como prueba para acusar a nadie.",
+      ],
+    },
+    faq: [
+      ["¿Es fiable este detector?", "Es orientativo. Ningún detector puede asegurar si un texto está escrito con IA: tómalo como una pista, no como una prueba."],
+      ["¿Se guarda o se envía mi texto?", "No. El análisis se hace en tu navegador y el texto no sale de tu dispositivo."],
+      ["¿Cómo hago que un texto suene menos a IA?", "Varía la longitud de las frases, quita las fórmulas hechas («es importante destacar», «en conclusión»), añade ejemplos concretos y tu opinión en primera persona."],
     ],
   },
 ];

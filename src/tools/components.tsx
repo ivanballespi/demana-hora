@@ -1054,8 +1054,8 @@ function EdadMascota() {
   );
 }
 
-function SueldoNeto() {
-  const [bruto, setBruto] = useState("30000");
+function SueldoNeto({ inicial = 30000 }: { inicial?: number }) {
+  const [bruto, setBruto] = useState(String(inicial));
   const [pagas, setPagas] = useState<"12" | "14">("14");
   const [contrato, setContrato] = useState<"indefinido" | "temporal">("indefinido");
   const [situacion, setSituacion] = useState<L.Situacion>("general");
@@ -1206,6 +1206,67 @@ function Finiquito() {
   );
 }
 
+function DetectorIA() {
+  const [t, setT] = useState("");
+  const r = L.analizarIA(t);
+  const color = r.porcentaje >= 70 ? "text-red-600" : r.porcentaje >= 40 ? "text-amber-600" : "text-emerald-700";
+  const veredicto = r.porcentaje >= 70 ? "Muchas señales de IA" : r.porcentaje >= 40 ? "Señales mixtas" : "Parece escrito por una persona";
+  // Subratlla les expressions típiques dins del text
+  const partes = useMemo(() => {
+    if (!r.encontradas.length) return [t];
+    const re = new RegExp(`(${r.encontradas.map((f) => f.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).sort((a, b) => b.length - a.length).join("|")})`, "gi");
+    return t.split(re);
+  }, [t, r.encontradas]);
+  const esFrase = (s: string) => r.encontradas.includes(s.toLocaleLowerCase("es"));
+  return (
+    <div className="space-y-4">
+      <label className="block">
+        <span className="label">Texto a analizar</span>
+        <textarea id="texto-ia" className="input min-h-56" value={t} onChange={(e) => setT(e.target.value)} placeholder="Pega aquí el texto que quieres comprobar (mínimo 80 palabras)…" />
+      </label>
+      <div className="flex items-center justify-between text-xs text-stone-500">
+        <span>{r.palabras} palabras</span>
+        {t && <button type="button" className="underline" onClick={() => setT("")}>Borrar</button>}
+      </div>
+      {!t.trim() ? (
+        <div className="rounded-2xl border-2 border-dashed border-stone-300 p-6 text-center text-stone-500">
+          Pega un texto arriba y te diremos qué porcentaje de señales de IA tiene.
+        </div>
+      ) : !r.suficiente ? (
+        <Big>Faltan {80 - r.palabras} palabras para poder analizarlo</Big>
+      ) : (
+        <>
+          <div className="rounded-2xl bg-brand-soft p-5">
+            <div className="text-sm text-stone-600">Señales de escritura con IA</div>
+            <div className={`text-4xl font-black ${color}`}>{r.porcentaje} %</div>
+            <div className="font-semibold">{veredicto}</div>
+            <div className="mt-3 h-3 overflow-hidden rounded-full bg-white">
+              <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-amber-400 to-red-500" style={{ width: `${r.porcentaje}%` }} />
+            </div>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {r.señales.map((s) => (
+              <div key={s.id} className="rounded-xl border border-stone-200 bg-white p-3">
+                <div className="flex justify-between gap-2 text-sm"><span>{s.nombre}</span><b className="tabular-nums">{Math.round(s.valor * 100)} %</b></div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-stone-100"><div className="h-full rounded-full bg-brand" style={{ width: `${s.valor * 100}%` }} /></div>
+              </div>
+            ))}
+          </div>
+          {r.encontradas.length > 0 && (
+            <details className="rounded-xl border border-stone-200 bg-white p-3" open>
+              <summary className="cursor-pointer text-sm font-semibold">Expresiones típicas de IA encontradas ({r.encontradas.length})</summary>
+              <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed">
+                {partes.map((p, i) => (esFrase(p) ? <mark key={i} className="rounded bg-amber-100 px-0.5">{p}</mark> : <span key={i}>{p}</span>))}
+              </p>
+            </details>
+          )}
+          <p className="text-xs text-stone-500">Resultado orientativo basado en señales de estilo. Ningún detector de IA es fiable al 100 %: no lo uses como prueba para acusar a nadie.</p>
+        </>
+      )}
+    </div>
+  );
+}
+
 export const TOOL_COMPONENTS: Record<string, () => React.ReactNode> = {
   "numeros-a-letras": NumerosALetras,
   "letra-dni": LetraDni,
@@ -1243,9 +1304,17 @@ export const TOOL_COMPONENTS: Record<string, () => React.ReactNode> = {
   "horas-entre-dos-horas": HorasEntre,
   "calculadora-ritmo-running": RitmoRunning,
   "edad-perro-gato-anos-humanos": EdadMascota,
-  "calculadora-sueldo-neto": SueldoNeto,
+  "calculadora-sueldo-neto": () => <SueldoNeto />,
   "calculadora-finiquito": Finiquito,
+  "detector-texto-ia": DetectorIA,
 };
+
+/** Calculadora de sou net per incrustar a les pàgines de sous concrets. */
+export function SueldoNetoWidget({ inicial }: { inicial: number }) {
+  const mounted = useSyncExternalStore(noop, () => true, () => false);
+  if (!mounted) return <div className="min-h-64 animate-pulse rounded-2xl bg-stone-100" />;
+  return <SueldoNeto inicial={inicial} />;
+}
 
 /** Botons per compartir l'eina: el trànsit que porten els usuaris és gratis. */
 export function ShareBar({ title, url }: { title: string; url: string }) {

@@ -6,6 +6,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { ShareBar, ToolWidget } from "@/tools/components";
 import { EVENTO_INFO, shortName } from "@/tools/eventos";
 import { CATEGORIES, CATEGORY_INFO, ICONS, POPULAR, TOOLS, toolBySlug } from "@/tools/registry";
+import { SUELDOS, sueldoSlug } from "@/tools/sueldos";
 
 export const dynamicParams = false;
 export const generateStaticParams = () => TOOLS.map((t) => ({ tool: t.slug }));
@@ -51,6 +52,19 @@ export default async function Page({ params }: PageProps<"/[tool]">) {
             <ToolWidget slug={t.slug} />
           </section>
           <div className="mt-4"><ShareBar title={t.title} url={url} /></div>
+
+          {t.slug === "calculadora-sueldo-neto" && (
+            <section className="mt-8">
+              <h2 className="text-lg font-extrabold">Sueldos más buscados</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {SUELDOS.map((n) => (
+                  <Link key={n} href={`/sueldo-neto/${sueldoSlug(n)}/`} className="rounded-full border border-stone-300 bg-white px-3 py-1.5 text-sm font-semibold hover:border-brand hover:text-brand">
+                    {n.toLocaleString("es-ES")} € brutos
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
           {t.slug === "cuenta-atras" && (
             <div className="mt-8 flex flex-wrap gap-2">

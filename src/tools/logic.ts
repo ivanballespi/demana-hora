@@ -738,3 +738,68 @@ export function finiquito(opts: {
   const totalFiniquito = salario + vacaciones + pagas;
   return { salario, vacaciones, diasVacaciones: Math.max(0, vac.pendientes), pagas, indemnizacion: ind, totalFiniquito, total: totalFiniquito + ind.importe };
 }
+
+/* ---------- Analizador de señales de texto escrito con IA (heurístico y orientativo) ---------- */
+
+/** Expressions que els models d'IA fan servir molt més que les persones (en castellà). */
+export const FRASES_IA = [
+  "es importante destacar", "cabe destacar", "es importante tener en cuenta", "es fundamental", "es esencial", "es crucial",
+  "juega un papel", "desempeña un papel", "un papel crucial", "un papel fundamental", "en el mundo actual", "en la actualidad",
+  "en el panorama", "en conclusión", "en resumen", "en definitiva", "en última instancia", "sin lugar a dudas", "no cabe duda",
+  "en este sentido", "a lo largo de", "un aspecto clave", "aspectos clave", "una amplia gama", "una gran variedad",
+  "no solo", "sino también", "por otro lado", "además,", "asimismo", "de manera significativa", "de forma significativa",
+  "fomentar", "potenciar", "abordar", "garantizar", "optimizar", "aprovechar", "sumergirse", "adentrarse", "explorar",
+  "fascinante", "vibrante", "robusto", "integral", "innovador", "transformador", "crucial", "panorama", "enriquecedor",
+  "en un mundo", "cada vez más", "hoy en día", "en constante evolución", "ofrece una", "permite a los",
+];
+
+const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
+
+export function analizarIA(texto: string) {
+  const t = texto.replace(/\r/g, "").trim();
+  const palabras = t ? t.split(/\s+/).length : 0;
+  const frases = (t.match(/[^.!?…]+[.!?…]+/g) ?? []).map((f) => f.trim().split(/\s+/).length).filter((n) => n > 2);
+  const parrafos = t.split(/\n\s*\n/).map((p) => p.trim().split(/\s+/).length).filter((n) => n > 5);
+  const lower = t.toLocaleLowerCase("es");
+
+  const cv = (xs: number[]) => {
+    if (xs.length < 3) return NaN;
+    const m = xs.reduce((s, x) => s + x, 0) / xs.length;
+    return Math.sqrt(xs.reduce((s, x) => s + (x - m) ** 2, 0) / xs.length) / m;
+  };
+
+  // 1. Regularitat de les frases: les persones alternen frases curtes i llargues.
+  const cvFrases = cv(frases);
+  const regularidad = Number.isNaN(cvFrases) ? 0.5 : clamp01((0.65 - cvFrases) / 0.35);
+
+  // 2. Expressions típiques d'IA per cada 100 paraules.
+  const encontradas: string[] = [];
+  let hits = 0;
+  for (const f of FRASES_IA) {
+    const n = lower.split(f).length - 1;
+    if (n) { hits += n; encontradas.push(f); }
+  }
+  const frasesIA = clamp01((hits / Math.max(1, palabras)) * 100 / 2.5);
+
+  // 3. Paràgrafs de mida semblant.
+  const cvPar = cv(parrafos);
+  const parrafosIguales = Number.isNaN(cvPar) ? 0.5 : clamp01((0.5 - cvPar) / 0.35);
+
+  // 4. Trets humans: primera persona, exclamacions, punts suspensius, col·loquialismes, emojis.
+  const marcas =
+    (lower.match(/\b(yo|me|mi|mí|conmigo|creo que|pienso que)\b/g) ?? []).length +
+    (t.match(/[!¡]/g) ?? []).length + (t.match(/\.\.\.|…/g) ?? []).length +
+    (lower.match(/\b(jaja\w*|vale|pues|tío|tía|guay|o sea|en plan|osea)\b/g) ?? []).length +
+    (t.match(/\p{Extended_Pictographic}/gu) ?? []).length;
+  const sinMarcasHumanas = clamp01(1 - (marcas / Math.max(1, palabras)) * 100 / 2);
+
+  const señales = [
+    { id: "regularidad", nombre: "Frases de longitud muy regular", valor: regularidad, peso: 0.3 },
+    { id: "frases", nombre: "Expresiones típicas de la IA", valor: frasesIA, peso: 0.35 },
+    { id: "parrafos", nombre: "Párrafos de tamaño parecido", valor: parrafosIguales, peso: 0.1 },
+    { id: "humanas", nombre: "Pocas marcas personales o informales", valor: sinMarcasHumanas, peso: 0.25 },
+  ];
+  const bruto = señales.reduce((s, x) => s + x.valor * x.peso, 0);
+  const porcentaje = Math.round(5 + bruto * 90); // mai 0 ni 100: no hi ha certeses
+  return { porcentaje, palabras, frases: frases.length, señales, encontradas, suficiente: palabras >= 80 };
+}
