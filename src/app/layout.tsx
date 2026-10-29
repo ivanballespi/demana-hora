@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { ADSENSE_CLIENT, SITE_NAME, SITE_URL } from "@/lib/site";
+import { ADSENSE_CLIENT, GOOGLE_SITE_VERIFICATION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: { siteName: SITE_NAME, locale: "es_ES", type: "website" },
   twitter: { card: "summary_large_image" },
   formatDetection: { telephone: false },
-  verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined },
+  verification: { google: GOOGLE_SITE_VERIFICATION },
 };
 
 export const viewport: Viewport = { themeColor: "#047857" };
