@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ADSENSE_CLIENT, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -6,10 +6,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: `${SITE_NAME} · Calculadoras y herramientas online gratis`, template: `%s | ${SITE_NAME}` },
   description:
-    "Calculadoras y herramientas gratis en español: números a letras, letra del DNI, IVA, porcentajes, hipoteca, días entre fechas y más. Rápidas, sin registro y sin instalar nada.",
+    "Más de 25 calculadoras y herramientas gratis en español: IVA, porcentajes, hipoteca, letra del DNI, días entre fechas, números a letras, IMC y más. Rápidas, sin registro y sin instalar nada.",
   openGraph: { siteName: SITE_NAME, locale: "es_ES", type: "website" },
+  twitter: { card: "summary_large_image" },
+  formatDetection: { telephone: false },
   verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined },
 };
+
+export const viewport: Viewport = { themeColor: "#047857" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

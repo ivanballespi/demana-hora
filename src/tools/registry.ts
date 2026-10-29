@@ -1,15 +1,39 @@
 // Metadades i text SEO de cada eina. El component interactiu és a ./components.
 
-export type Category = "texto" | "documentos" | "fechas" | "calculos" | "finanzas" | "utilidades";
+export type Category = "texto" | "documentos" | "fechas" | "calculos" | "finanzas" | "utilidades" | "salud";
 
 export const CATEGORIES: Record<Category, string> = {
   calculos: "Cálculos rápidos",
   finanzas: "Finanzas",
   fechas: "Fechas y tiempo",
+  salud: "Salud",
   documentos: "Documentos",
   texto: "Texto",
   utilidades: "Utilidades",
 };
+
+/** Pàgina de categoria: /categoria/<slug>/ */
+export const CATEGORY_INFO: Record<Category, { slug: string; icon: string; title: string; intro: string }> = {
+  calculos: { slug: "calculadoras", icon: "🧮", title: "Calculadoras online gratis", intro: "Porcentajes, IVA, descuentos, regla de tres, nota media, máximo común divisor... Las calculadoras que más se usan en el día a día, con la explicación de cada cálculo." },
+  finanzas: { slug: "finanzas", icon: "💶", title: "Calculadoras financieras", intro: "Calcula la cuota de tu hipoteca, cuánto crecerán tus ahorros con el interés compuesto o cuánto te costará un viaje en coche." },
+  fechas: { slug: "fechas", icon: "📅", title: "Calculadoras de fechas y tiempo", intro: "Días entre dos fechas, edad exacta, semana del año, cuenta atrás, sumar días a una fecha o sumar horas trabajadas." },
+  salud: { slug: "salud", icon: "❤️", title: "Calculadoras de salud", intro: "Calcula tu índice de masa corporal (IMC) o la fecha probable de parto. Son orientativas: ante cualquier duda, consulta con un profesional sanitario." },
+  documentos: { slug: "documentos", icon: "🪪", title: "Herramientas para documentos", intro: "Calcula la letra del DNI o NIE y comprueba si un IBAN es correcto antes de hacer una transferencia." },
+  texto: { slug: "texto", icon: "✍️", title: "Herramientas de texto", intro: "Convierte números a letras, cuenta palabras y caracteres, cambia mayúsculas y minúsculas o pasa números a romanos." },
+  utilidades: { slug: "utilidades", icon: "🛠️", title: "Utilidades online", intro: "Genera contraseñas seguras, números aleatorios para sorteos y convierte unidades de medida." },
+};
+
+export const ICONS: Record<string, string> = {
+  "numeros-a-letras": "🔤", "letra-dni": "🪪", "validar-iban": "🏦", "dias-entre-fechas": "📆", "calculadora-edad": "🎂",
+  "sumar-dias-fecha": "➕", "sumar-horas": "⏱️", "calculadora-porcentajes": "％", "calculadora-iva": "🧾", "regla-de-tres": "📐",
+  "calculadora-nota-media": "🎓", "calculadora-hipoteca": "🏠", "interes-compuesto": "📈", "contador-palabras": "📝",
+  "convertir-mayusculas-minusculas": "🔠", "numeros-romanos": "🏛️", "generador-contrasenas": "🔐", "calculadora-imc": "⚖️",
+  "fecha-probable-de-parto": "🤰", "mcd-mcm": "➗", "calculadora-descuentos": "🏷️", "coste-viaje-gasolina": "⛽",
+  "conversor-unidades": "📏", "semana-del-ano": "🗓️", "numero-aleatorio": "🎲", "cuenta-atras": "⏳",
+};
+
+/** Les que surten destacades a la portada. */
+export const POPULAR = ["calculadora-iva", "calculadora-porcentajes", "numeros-a-letras", "letra-dni", "calculadora-hipoteca", "dias-entre-fechas", "calculadora-imc", "semana-del-ano"];
 
 export type ToolMeta = {
   slug: string;
@@ -361,6 +385,184 @@ export const TOOLS: ToolMeta[] = [
     faq: [
       ["¿Guardáis las contraseñas que genero?", "No. Se generan en tu navegador y no se envían a ningún servidor."],
       ["¿Qué significa «sin caracteres ambiguos»?", "Quita los que se confunden fácilmente (l, I, 1, O, 0), útil si tienes que copiar la contraseña a mano."],
+    ],
+  },
+  {
+    slug: "calculadora-imc",
+    category: "salud",
+    name: "Calculadora de IMC",
+    title: "Calculadora de IMC: calcula tu índice de masa corporal",
+    description: "Calcula tu índice de masa corporal (IMC) con tu peso y tu altura, y descubre en qué rango estás según la OMS y cuál sería tu peso saludable.",
+    intro: "Introduce tu peso y tu altura y te decimos tu IMC, en qué categoría estás según la Organización Mundial de la Salud y qué rango de peso se considera saludable para tu altura.",
+    howTo: {
+      title: "Cómo se calcula el IMC",
+      body: [
+        "El IMC es el peso en kilos dividido entre la altura en metros al cuadrado. Una persona de 70 kg y 1,75 m tiene un IMC de 70 ÷ (1,75 × 1,75) = 22,9.",
+        "Según la OMS, en adultos: menos de 18,5 es bajo peso, de 18,5 a 24,9 es peso normal, de 25 a 29,9 es sobrepeso y 30 o más es obesidad.",
+        "El IMC es orientativo: no distingue entre músculo y grasa, y no sirve igual para deportistas, embarazadas, niños o personas mayores. Consulta con un profesional sanitario si tienes dudas.",
+      ],
+    },
+    faq: [
+      ["¿Qué IMC es normal?", "En adultos, un IMC entre 18,5 y 24,9 se considera peso normal según la OMS."],
+      ["¿El IMC sirve para niños?", "No directamente: en niños y adolescentes se usan tablas de percentiles según la edad y el sexo."],
+      ["¿Es fiable el IMC?", "Es una referencia rápida y útil para la mayoría de adultos, pero no mide la grasa corporal. Una persona muy musculada puede salir con sobrepeso sin tenerlo."],
+    ],
+  },
+  {
+    slug: "fecha-probable-de-parto",
+    category: "salud",
+    name: "Fecha probable de parto",
+    title: "Calculadora de embarazo: fecha probable de parto y semanas",
+    description: "Calcula la fecha probable de parto a partir de la última regla y descubre de cuántas semanas estás embarazada y en qué trimestre.",
+    intro: "Pon la fecha de inicio de tu última regla y te calculamos la fecha probable de parto, las semanas de embarazo que llevas y el trimestre en el que estás.",
+    howTo: {
+      title: "Cómo se calcula la fecha probable de parto",
+      body: [
+        "Se usa la regla de Naegele: se suman 280 días (40 semanas) al primer día de la última regla.",
+        "Las semanas de embarazo se cuentan también desde la última regla, aunque la concepción suele producirse unas dos semanas después.",
+        "Es una estimación: solo una pequeña parte de los partos se producen exactamente ese día. La fecha que te dé tu ginecólogo o comadrona con la ecografía es la que manda.",
+      ],
+    },
+    faq: [
+      ["¿Cuántas semanas dura un embarazo?", "Unas 40 semanas contando desde la última regla. Se considera a término entre la semana 37 y la 42."],
+      ["¿Qué pasa si mis ciclos son irregulares?", "El cálculo será menos preciso. La ecografía del primer trimestre es la forma más fiable de datar el embarazo."],
+    ],
+  },
+  {
+    slug: "mcd-mcm",
+    category: "calculos",
+    name: "MCD y MCM",
+    title: "Calculadora de máximo común divisor y mínimo común múltiplo",
+    description: "Calcula el máximo común divisor (MCD) y el mínimo común múltiplo (mcm) de dos o más números al instante, con la explicación.",
+    intro: "Escribe dos o más números separados por comas o espacios y te damos su máximo común divisor y su mínimo común múltiplo.",
+    howTo: {
+      title: "Cómo se calculan el MCD y el mcm",
+      body: [
+        "El máximo común divisor es el número más grande que divide a todos exactamente. El de 12, 18 y 24 es 6.",
+        "El mínimo común múltiplo es el número más pequeño que es múltiplo de todos. El de 4, 6 y 10 es 60.",
+        "Para dos números se cumple que MCD × mcm = a × b. La calculadora usa el algoritmo de Euclides, que es el más rápido.",
+      ],
+    },
+    faq: [
+      ["¿Para qué sirve el mínimo común múltiplo?", "Por ejemplo, para sumar fracciones con distinto denominador: el denominador común es el mcm."],
+      ["¿Cuánto vale el MCD de dos números primos?", "Siempre 1. Por eso se dice que son primos entre sí."],
+    ],
+  },
+  {
+    slug: "calculadora-descuentos",
+    category: "calculos",
+    name: "Calculadora de descuentos",
+    title: "Calculadora de descuentos: precio final con rebaja",
+    description: "Calcula el precio final de un producto con descuento y cuánto te ahorras. También con descuentos acumulados (rebajas + cupón).",
+    intro: "Pon el precio y el porcentaje de descuento y te decimos cuánto pagarás y cuánto te ahorras. Puedes añadir un segundo descuento para las rebajas con cupón.",
+    howTo: {
+      title: "Cómo se calcula un descuento",
+      body: [
+        "Precio final = precio × (1 − descuento ÷ 100). Un artículo de 80 € con un 25% de descuento cuesta 80 × 0,75 = 60 €.",
+        "Dos descuentos no se suman: un 20% y luego un 10% más no es un 30%, sino un 28%, porque el segundo se aplica sobre el precio ya rebajado.",
+      ],
+    },
+    faq: [
+      ["¿Un 50% + 50% es gratis?", "No. Es un 75% de descuento: el segundo 50% se aplica sobre la mitad del precio."],
+      ["¿Cómo sé el porcentaje de descuento que me han hecho?", "Usa la calculadora de porcentajes: la variación entre el precio inicial y el final te da el descuento real."],
+    ],
+  },
+  {
+    slug: "coste-viaje-gasolina",
+    category: "finanzas",
+    name: "Coste de un viaje",
+    title: "Calculadora de gasolina: cuánto cuesta un viaje en coche",
+    description: "Calcula cuánto te costará un viaje en coche según los kilómetros, el consumo y el precio del combustible, y cuánto toca pagar a cada uno.",
+    intro: "Indica los kilómetros, el consumo de tu coche y el precio del litro de gasolina o diésel. Te decimos cuánto costará el viaje y cuánto debe poner cada persona.",
+    howTo: {
+      title: "Cómo calcular el gasto de combustible",
+      body: [
+        "Litros = kilómetros × consumo ÷ 100. Coste = litros × precio por litro.",
+        "Un viaje de 500 km con un coche que gasta 6 l/100 km necesita 30 litros. A 1,60 €/l, son 48 €.",
+        "El consumo real depende de la velocidad, el tráfico, la carga y el aire acondicionado. En autopista a velocidad alta suele ser mayor que el oficial.",
+      ],
+    },
+    faq: [
+      ["¿Cuánto consume mi coche?", "Lo tienes en la ficha técnica o en el ordenador de a bordo. Un turismo medio gasta entre 5 y 7 litros cada 100 km."],
+      ["¿Incluye los peajes?", "No, solo el combustible. Si hay peajes, súmalos aparte."],
+    ],
+  },
+  {
+    slug: "conversor-unidades",
+    category: "utilidades",
+    name: "Conversor de unidades",
+    title: "Conversor de unidades: longitud, peso, volumen y temperatura",
+    description: "Convierte unidades al instante: km a millas, kilos a libras, litros a galones, metros cuadrados a hectáreas, Celsius a Fahrenheit y más.",
+    intro: "Elige la magnitud, escribe la cantidad y las unidades de origen y destino. El resultado se actualiza al momento.",
+    howTo: {
+      title: "Las conversiones más buscadas",
+      body: [
+        "1 milla = 1,609 km; 1 kilómetro = 0,621 millas. 1 pulgada = 2,54 cm; 1 pie = 30,48 cm.",
+        "1 kilo = 2,205 libras; 1 libra = 453,6 gramos. 1 onza = 28,35 gramos.",
+        "Para pasar de grados Celsius a Fahrenheit: °F = °C × 9 ÷ 5 + 32. 20 °C son 68 °F.",
+        "1 hectárea = 10.000 m². 1 acre = 4.047 m².",
+      ],
+    },
+    faq: [
+      ["¿Cuántos centímetros tiene una pulgada?", "2,54 cm exactos. Una pantalla de 55 pulgadas mide unos 140 cm de diagonal."],
+      ["¿Cuántos grados Fahrenheit son 37 °C?", "98,6 °F, la temperatura corporal normal."],
+    ],
+  },
+  {
+    slug: "semana-del-ano",
+    category: "fechas",
+    name: "Semana del año",
+    title: "¿En qué semana del año estamos? Número de semana actual",
+    description: "Descubre en qué número de semana estamos hoy (calendario ISO, el que se usa en España) o la semana de cualquier fecha.",
+    intro: "Te decimos el número de semana de hoy según el calendario ISO 8601, el que se usa en España y en Europa. También puedes elegir cualquier otra fecha.",
+    howTo: {
+      title: "Cómo se numeran las semanas",
+      body: [
+        "En el calendario ISO 8601, las semanas empiezan en lunes y la semana 1 es la que contiene el primer jueves del año.",
+        "Por eso los primeros días de enero pueden pertenecer a la última semana del año anterior, y un año puede tener 52 o 53 semanas.",
+        "En Estados Unidos se usa otro sistema (semanas que empiezan en domingo), así que el número puede variar en uno.",
+      ],
+    },
+    faq: [
+      ["¿Cuántas semanas tiene un año?", "52 o 53 según el calendario ISO. Tienen 53 los años que empiezan en jueves (o en miércoles, si son bisiestos)."],
+      ["¿La semana empieza en lunes o en domingo?", "En España y en el estándar ISO, en lunes."],
+    ],
+  },
+  {
+    slug: "numero-aleatorio",
+    category: "utilidades",
+    name: "Número aleatorio",
+    title: "Generador de números aleatorios para sorteos",
+    description: "Genera números aleatorios entre dos valores, uno o varios, con o sin repetición. Perfecto para sorteos, rifas y concursos en redes sociales.",
+    intro: "Elige el rango y cuántos números quieres. Usamos el generador aleatorio criptográfico de tu navegador, así que el resultado es imparcial.",
+    howTo: {
+      title: "Cómo hacer un sorteo justo",
+      body: [
+        "Numera a los participantes (por ejemplo, por orden de comentario) y genera un número entre 1 y el total de participantes.",
+        "Si hay varios premios, activa «sin repetir» para que no salga dos veces el mismo ganador.",
+        "Para que sea transparente, haz una captura de pantalla o graba el sorteo y publícalo.",
+      ],
+    },
+    faq: [
+      ["¿Los números son realmente aleatorios?", "Sí: usamos crypto.getRandomValues, el generador criptográfico del navegador, sin sesgos."],
+      ["¿Puedo sacar varios números sin que se repitan?", "Sí, activa la opción «sin repetir». Ideal para sorteos con varios premios o para la lotería."],
+    ],
+  },
+  {
+    slug: "cuenta-atras",
+    category: "fechas",
+    name: "Cuenta atrás",
+    title: "Cuenta atrás: cuántos días faltan para una fecha",
+    description: "Calcula cuántos días, horas y minutos faltan para cualquier fecha: un viaje, un cumpleaños, una boda o las vacaciones.",
+    intro: "Elige la fecha (y la hora, si quieres) y verás una cuenta atrás en directo con los días, horas, minutos y segundos que faltan.",
+    howTo: {
+      title: "Cuentas atrás populares",
+      body: [
+        "También tenemos cuentas atrás preparadas para las fechas más esperadas del año: Navidad, Nochevieja, el Día de Reyes, Semana Santa, el verano, Halloween o el Black Friday.",
+      ],
+    },
+    faq: [
+      ["¿Cuenta el día de hoy?", "La cuenta atrás va hasta el instante exacto que elijas; si no pones hora, hasta las 00:00 de ese día."],
     ],
   },
 ];

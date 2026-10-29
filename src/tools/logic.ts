@@ -331,3 +331,120 @@ export function generarContraseña(
   }
   return chars.slice(0, longitud).join("");
 }
+
+/* ---------- Salud ---------- */
+
+export function imc(pesoKg: number, alturaCm: number) {
+  const m = alturaCm / 100;
+  const valor = pesoKg / (m * m);
+  const categoria =
+    valor < 18.5 ? "Bajo peso" : valor < 25 ? "Peso normal" : valor < 30 ? "Sobrepeso" : valor < 35 ? "Obesidad grado I" : valor < 40 ? "Obesidad grado II" : "Obesidad grado III";
+  return { valor, categoria, pesoMin: 18.5 * m * m, pesoMax: 24.9 * m * m };
+}
+
+/** Fecha probable de parto (regla de Naegele: FUR + 280 días) y semanas de embarazo a fecha de hoy. */
+export function embarazo(fur: string, hoy: string) {
+  const parto = sumarDias(fur, 280);
+  const dias = Math.round((parseFecha(hoy) - parseFecha(fur)) / DIA);
+  return { parto, semanas: Math.floor(dias / 7), dias: dias % 7, diasTotales: dias, trimestre: dias < 14 * 7 ? 1 : dias < 28 * 7 ? 2 : 3 };
+}
+
+/* ---------- Matemáticas ---------- */
+
+const mcd2 = (a: number, b: number): number => (b === 0 ? Math.abs(a) : mcd2(b, a % b));
+export const mcd = (nums: number[]) => nums.reduce((a, b) => mcd2(a, b));
+export const mcm = (nums: number[]) => nums.reduce((a, b) => (a === 0 || b === 0 ? 0 : Math.abs(a * b) / mcd2(a, b)));
+
+export function descuento(precio: number, porcentajes: number[]) {
+  const final = porcentajes.reduce((p, d) => p * (1 - d / 100), precio);
+  return { final, ahorro: precio - final, descuentoTotal: precio ? (1 - final / precio) * 100 : 0 };
+}
+
+export function costeViaje(km: number, consumo: number, precioLitro: number, personas = 1, idaYVuelta = false) {
+  const distancia = idaYVuelta ? km * 2 : km;
+  const litros = (distancia * consumo) / 100;
+  const coste = litros * precioLitro;
+  return { distancia, litros, coste, porPersona: coste / Math.max(1, personas) };
+}
+
+/* ---------- Unidades ---------- */
+
+export const MAGNITUDES: Record<string, { nombre: string; unidades: Record<string, [string, number]> }> = {
+  longitud: {
+    nombre: "Longitud",
+    unidades: { mm: ["Milímetros", 0.001], cm: ["Centímetros", 0.01], m: ["Metros", 1], km: ["Kilómetros", 1000], in: ["Pulgadas", 0.0254], ft: ["Pies", 0.3048], yd: ["Yardas", 0.9144], mi: ["Millas", 1609.344] },
+  },
+  peso: {
+    nombre: "Peso",
+    unidades: { mg: ["Miligramos", 0.000001], g: ["Gramos", 0.001], kg: ["Kilos", 1], t: ["Toneladas", 1000], oz: ["Onzas", 0.028349523125], lb: ["Libras", 0.45359237] },
+  },
+  volumen: {
+    nombre: "Volumen",
+    unidades: { ml: ["Mililitros", 0.001], cl: ["Centilitros", 0.01], l: ["Litros", 1], m3: ["Metros cúbicos", 1000], galUS: ["Galones (EE. UU.)", 3.785411784], taza: ["Tazas (250 ml)", 0.25] },
+  },
+  superficie: {
+    nombre: "Superficie",
+    unidades: { cm2: ["cm²", 0.0001], m2: ["m²", 1], ha: ["Hectáreas", 10000], km2: ["km²", 1000000], ft2: ["Pies²", 0.09290304], acre: ["Acres", 4046.8564224] },
+  },
+  temperatura: { nombre: "Temperatura", unidades: { C: ["Celsius (°C)", 1], F: ["Fahrenheit (°F)", 1], K: ["Kelvin (K)", 1] } },
+};
+
+export function convertir(categoria: string, valor: number, de: string, a: string): number {
+  if (categoria === "temperatura") {
+    const c = de === "C" ? valor : de === "F" ? ((valor - 32) * 5) / 9 : valor - 273.15;
+    return a === "C" ? c : a === "F" ? (c * 9) / 5 + 32 : c + 273.15;
+  }
+  const u = MAGNITUDES[categoria].unidades;
+  return (valor * u[de][1]) / u[a][1];
+}
+
+/* ---------- Calendario ---------- */
+
+/** Semana ISO 8601 (la que se usa en España: empieza en lunes; la semana 1 contiene el primer jueves). */
+export function semanaISO(fecha: string) {
+  const t = parseFecha(fecha);
+  const wd = (new Date(t).getUTCDay() + 6) % 7; // 0 = lunes
+  const jueves = t + (3 - wd) * DIA;
+  const año = new Date(jueves).getUTCFullYear();
+  const semana = 1 + Math.floor((jueves - Date.UTC(año, 0, 1)) / (7 * DIA));
+  return { semana, año, lunes: formatoFecha(t - wd * DIA), domingo: formatoFecha(t + (6 - wd) * DIA) };
+}
+
+/** Domingo de Pascua (algoritmo de Meeus/Jones/Butcher, calendario gregoriano). */
+export function domingoPascua(y: number) {
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+  const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const mes = Math.floor((h + l - 7 * m + 114) / 31);
+  const dia = ((h + l - 7 * m + 114) % 31) + 1;
+  return formatoFecha(Date.UTC(y, mes - 1, dia));
+}
+
+/** n-ésimo día de la semana (0 = domingo) de un mes: p. ej. primer domingo de mayo. */
+function enesimoDia(y: number, mes: number, weekday: number, n: number) {
+  const primero = new Date(Date.UTC(y, mes - 1, 1)).getUTCDay();
+  return formatoFecha(Date.UTC(y, mes - 1, 1 + ((weekday - primero + 7) % 7) + (n - 1) * 7));
+}
+
+export const EVENTOS: Record<string, { nombre: string; fecha: (y: number) => string }> = {
+  navidad: { nombre: "Navidad", fecha: (y) => `${y}-12-25` },
+  nochevieja: { nombre: "Nochevieja", fecha: (y) => `${y}-12-31` },
+  "reyes-magos": { nombre: "el Día de Reyes", fecha: (y) => `${y}-01-06` },
+  "semana-santa": { nombre: "Semana Santa", fecha: (y) => sumarDias(domingoPascua(y), -7) },
+  "san-valentin": { nombre: "San Valentín", fecha: (y) => `${y}-02-14` },
+  "dia-del-padre": { nombre: "el Día del Padre", fecha: (y) => `${y}-03-19` },
+  "dia-de-la-madre": { nombre: "el Día de la Madre", fecha: (y) => enesimoDia(y, 5, 0, 1) },
+  verano: { nombre: "el verano", fecha: (y) => `${y}-06-21` },
+  halloween: { nombre: "Halloween", fecha: (y) => `${y}-10-31` },
+  "black-friday": { nombre: "el Black Friday", fecha: (y) => sumarDias(enesimoDia(y, 11, 4, 4), 1) },
+};
+
+/** Próxima vez que ocurre el evento a partir de hoy (incluido). */
+export function proximoEvento(slug: string, hoy: string) {
+  const ev = EVENTOS[slug];
+  const y = Number(hoy.slice(0, 4));
+  let fecha = ev.fecha(y);
+  if (fecha < hoy) fecha = ev.fecha(y + 1);
+  return { fecha, dias: Math.round((parseFecha(fecha) - parseFecha(hoy)) / DIA) };
+}

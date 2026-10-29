@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import * as L from "@/tools/logic";
 
 /* ---------- Peces comunes ---------- */
+
+const noop = () => () => {};
 
 const eur = (n: number) =>
   Number.isFinite(n) ? n.toLocaleString("es-ES", { style: "currency", currency: "EUR" }) : "—";
@@ -512,6 +514,261 @@ function Contrasenas() {
   );
 }
 
+function Imc() {
+  const [peso, setPeso] = useState("70");
+  const [alt, setAlt] = useState("175");
+  const p = parse(peso), a = parse(alt);
+  const r = p > 0 && a > 50 && a < 260 ? L.imc(p, a) : null;
+  const color = !r ? "" : r.valor < 18.5 ? "text-sky-700" : r.valor < 25 ? "text-emerald-700" : r.valor < 30 ? "text-amber-600" : "text-red-600";
+  const pos = r ? Math.min(100, Math.max(0, ((r.valor - 15) / (40 - 15)) * 100)) : 0;
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Peso (kg)" value={peso} onChange={(e) => setPeso(e.target.value)} inputMode="decimal" />
+        <Field label="Altura (cm)" value={alt} onChange={(e) => setAlt(e.target.value)} inputMode="decimal" />
+      </div>
+      {r && (
+        <>
+          <Big label="Tu IMC">{num(r.valor, 1)} <span className={`text-lg ${color}`}>· {r.categoria}</span></Big>
+          <div>
+            <div className="relative h-3 rounded-full bg-gradient-to-r from-sky-400 via-emerald-400 via-40% to-red-500">
+              <div className="absolute -top-1 h-5 w-1.5 rounded bg-ink" style={{ left: `calc(${pos}% - 3px)` }} />
+            </div>
+            <div className="mt-1 flex justify-between text-[11px] text-stone-500"><span>15</span><span>18,5</span><span>25</span><span>30</span><span>40</span></div>
+          </div>
+          <Stat label="Peso saludable para tu altura" value={`${num(r.pesoMin, 1)} – ${num(r.pesoMax, 1)} kg`} />
+        </>
+      )}
+    </div>
+  );
+}
+
+function Embarazo() {
+  const [fur, setFur] = useState(L.sumarDias(today(), -70));
+  const r = fur && fur <= today() ? L.embarazo(fur, today()) : null;
+  return (
+    <div className="space-y-4">
+      <Field label="Primer día de la última regla" type="date" value={fur} onChange={(e) => setFur(e.target.value)} max={today()} />
+      {r && (
+        <>
+          <Big label="Fecha probable de parto">{weekday(r.parto)}</Big>
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label="Semanas de embarazo" value={r.diasTotales > 300 ? "—" : `${r.semanas} semanas y ${r.dias} días`} />
+            <Stat label="Trimestre" value={r.diasTotales > 300 ? "—" : `${r.trimestre}.º trimestre`} />
+          </div>
+          <div className="h-3 overflow-hidden rounded-full bg-stone-100">
+            <div className="h-full rounded-full bg-gradient-to-r from-pink-400 to-brand" style={{ width: `${Math.min(100, (r.diasTotales / 280) * 100)}%` }} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function McdMcm() {
+  const [v, setV] = useState("12, 18, 24");
+  const nums = v.split(/[\s,;]+/).map((x) => parseInt(x, 10)).filter((n) => Number.isFinite(n) && n > 0 && n < 1e9);
+  return (
+    <div className="space-y-4">
+      <Field label="Números (separados por comas o espacios)" value={v} onChange={(e) => setV(e.target.value)} inputMode="numeric" />
+      {nums.length >= 2 ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Big label="Máximo común divisor (MCD)">{L.mcd(nums).toLocaleString("es-ES")}</Big>
+          <Big label="Mínimo común múltiplo (mcm)">{L.mcm(nums).toLocaleString("es-ES")}</Big>
+        </div>
+      ) : (
+        <Big>Escribe al menos dos números enteros</Big>
+      )}
+    </div>
+  );
+}
+
+function Descuentos() {
+  const [precio, setPrecio] = useState("80");
+  const [d1, setD1] = useState("25");
+  const [d2, setD2] = useState("");
+  const ds = [parse(d1), parse(d2)].filter((d) => Number.isFinite(d) && d > 0 && d <= 100);
+  const r = L.descuento(parse(precio), ds);
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Field label="Precio original (€)" value={precio} onChange={(e) => setPrecio(e.target.value)} inputMode="decimal" />
+        <Field label="Descuento (%)" value={d1} onChange={(e) => setD1(e.target.value)} inputMode="decimal" />
+        <Field label="2.º descuento (%) opcional" value={d2} onChange={(e) => setD2(e.target.value)} inputMode="decimal" placeholder="Ej.: cupón 10" />
+      </div>
+      <Big label="Precio final">{eur(r.final)}</Big>
+      <div className="grid grid-cols-2 gap-3">
+        <Stat label="Te ahorras" value={eur(r.ahorro)} />
+        <Stat label="Descuento total real" value={`${num(r.descuentoTotal)} %`} />
+      </div>
+    </div>
+  );
+}
+
+function Viaje() {
+  const [km, setKm] = useState("500");
+  const [cons, setCons] = useState("6");
+  const [precio, setPrecio] = useState("1,60");
+  const [pers, setPers] = useState("2");
+  const [iv, setIv] = useState(false);
+  const r = L.costeViaje(parse(km), parse(cons), parse(precio), parseInt(pers, 10) || 1, iv);
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Distancia (km)" value={km} onChange={(e) => setKm(e.target.value)} inputMode="decimal" />
+        <Field label="Consumo (litros/100 km)" value={cons} onChange={(e) => setCons(e.target.value)} inputMode="decimal" />
+        <Field label="Precio del litro (€)" value={precio} onChange={(e) => setPrecio(e.target.value)} inputMode="decimal" />
+        <Field label="Personas que pagan" value={pers} onChange={(e) => setPers(e.target.value)} inputMode="numeric" />
+      </div>
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={iv} onChange={(e) => setIv(e.target.checked)} className="h-4 w-4 accent-brand" />
+        Ida y vuelta
+      </label>
+      <Big label="Coste del combustible">{eur(r.coste)}</Big>
+      <div className="grid grid-cols-3 gap-3">
+        <Stat label="Por persona" value={eur(r.porPersona)} />
+        <Stat label="Litros" value={num(r.litros, 1)} />
+        <Stat label="Km totales" value={num(r.distancia, 0)} />
+      </div>
+    </div>
+  );
+}
+
+function Conversor() {
+  const [cat, setCat] = useState("longitud");
+  const keys = Object.keys(L.MAGNITUDES[cat].unidades);
+  const [de, setDe] = useState("km");
+  const [a, setA] = useState("mi");
+  const [v, setV] = useState("10");
+  const deOk = keys.includes(de) ? de : keys[0];
+  const aOk = keys.includes(a) ? a : keys[1];
+  const res = L.convertir(cat, parse(v), deOk, aOk);
+  const sel = (val: string, on: (v: string) => void) => (
+    <select className="input" value={val} onChange={(e) => on(e.target.value)}>
+      {keys.map((k) => <option key={k} value={k}>{L.MAGNITUDES[cat].unidades[k][0]}</option>)}
+    </select>
+  );
+  return (
+    <div className="space-y-4">
+      <Tabs value={cat} onChange={(c) => { setCat(c); const k = Object.keys(L.MAGNITUDES[c].unidades); setDe(k[0]); setA(k[1]); }} options={Object.entries(L.MAGNITUDES).map(([k, m]) => [k, m.nombre])} />
+      <div className="grid items-end gap-3 sm:grid-cols-[1fr_1fr_auto_1fr]">
+        <Field label="Cantidad" value={v} onChange={(e) => setV(e.target.value)} inputMode="decimal" />
+        <label className="block"><span className="label">De</span>{sel(deOk, setDe)}</label>
+        <button type="button" className="btn-ghost" onClick={() => { setDe(aOk); setA(deOk); }} aria-label="Intercambiar">⇄</button>
+        <label className="block"><span className="label">A</span>{sel(aOk, setA)}</label>
+      </div>
+      <Big label="Resultado">{num(res, 6)} <span className="text-lg text-stone-500">{L.MAGNITUDES[cat].unidades[aOk][0].toLowerCase()}</span></Big>
+    </div>
+  );
+}
+
+function SemanaAno() {
+  const [f, setF] = useState(today());
+  const r = f ? L.semanaISO(f) : null;
+  return (
+    <div className="space-y-4">
+      {r && <Big label={f === today() ? "Hoy estamos en la" : "Esa fecha es de la"}>Semana {r.semana} <span className="text-lg text-stone-500">de {r.año}</span></Big>}
+      {r && <Stat label="Va del" value={`lunes ${formatoCorto(r.lunes)} al domingo ${formatoCorto(r.domingo)}`} />}
+      <Field label="Consultar otra fecha" type="date" value={f} onChange={(e) => setF(e.target.value)} />
+    </div>
+  );
+}
+const formatoCorto = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString("es-ES", { day: "numeric", month: "long", timeZone: "UTC" });
+
+function Aleatorio() {
+  const [min, setMin] = useState("1");
+  const [max, setMax] = useState("100");
+  const [n, setN] = useState("1");
+  const [unicos, setUnicos] = useState(true);
+  const [res, setRes] = useState<number[]>([]);
+  const generar = () => {
+    const lo = Math.ceil(parse(min)), hi = Math.floor(parse(max)), cant = Math.min(1000, Math.max(1, parseInt(n, 10) || 1));
+    if (!(hi >= lo)) return setRes([]);
+    const rango = hi - lo + 1;
+    const rnd = (m: number) => { const lim = Math.floor(2 ** 32 / m) * m; const b = new Uint32Array(1); do crypto.getRandomValues(b); while (b[0] >= lim); return b[0] % m; };
+    if (unicos && cant <= rango) {
+      const set = new Set<number>();
+      while (set.size < cant) set.add(lo + rnd(rango));
+      setRes([...set]);
+    } else setRes(Array.from({ length: cant }, () => lo + rnd(rango)));
+  };
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-3">
+        <Field label="Mínimo" value={min} onChange={(e) => setMin(e.target.value)} inputMode="numeric" />
+        <Field label="Máximo" value={max} onChange={(e) => setMax(e.target.value)} inputMode="numeric" />
+        <Field label="¿Cuántos?" value={n} onChange={(e) => setN(e.target.value)} inputMode="numeric" />
+      </div>
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={unicos} onChange={(e) => setUnicos(e.target.checked)} className="h-4 w-4 accent-brand" />
+        Sin repetir
+      </label>
+      <button type="button" className="btn-primary w-full py-3 text-base" onClick={generar}>🎲 Generar</button>
+      {res.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {res.map((x, i) => <span key={i} className="rounded-xl bg-brand-soft px-4 py-2 text-2xl font-extrabold tabular-nums text-brand-dark">{x.toLocaleString("es-ES")}</span>)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Compte enrere en directe fins a una data (i hora) local. */
+export function Countdown({ target }: { target: string }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const diff = Math.max(0, new Date(target).getTime() - now);
+  const parts: [number, string][] = [
+    [Math.floor(diff / 86_400_000), "días"],
+    [Math.floor(diff / 3_600_000) % 24, "horas"],
+    [Math.floor(diff / 60_000) % 60, "min"],
+    [Math.floor(diff / 1000) % 60, "seg"],
+  ];
+  return (
+    <div className="grid grid-cols-4 gap-2">
+      {parts.map(([v, l]) => (
+        <div key={l} className="rounded-2xl bg-gradient-to-br from-brand to-brand-dark p-3 text-center text-white shadow-lg">
+          <div className="text-3xl font-extrabold tabular-nums sm:text-5xl">{v}</div>
+          <div className="text-xs uppercase tracking-wide opacity-80">{l}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Compte enrere a un esdeveniment fix (Nadal, Reis...), calculat amb la data real del visitant. */
+export function EventCountdown({ slug, nombre }: { slug: string; nombre: string }) {
+  const mounted = useSyncExternalStore(noop, () => true, () => false);
+  if (!mounted) return <div className="h-32 animate-pulse rounded-2xl bg-stone-100" />;
+  const { fecha, dias } = L.proximoEvento(slug, today());
+  return (
+    <>
+      {dias === 0 ? <Big>¡Es hoy! 🎉</Big> : <Countdown target={`${fecha}T00:00:00`} />}
+      <p className="text-center text-stone-700">
+        {nombre[0].toUpperCase() + nombre.slice(1)} cae en <b>{weekday(fecha)}</b>.
+      </p>
+    </>
+  );
+}
+
+function CuentaAtras() {
+  const [f, setF] = useState(L.sumarDias(today(), 30));
+  const [h, setH] = useState("00:00");
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Fecha" type="date" value={f} onChange={(e) => setF(e.target.value)} />
+        <Field label="Hora" type="time" value={h} onChange={(e) => setH(e.target.value)} />
+      </div>
+      {f && <Countdown target={`${f}T${h || "00:00"}:00`} />}
+      {f && <p className="text-center text-sm text-stone-600">Hasta el {weekday(f)}{h && h !== "00:00" ? ` a las ${h}` : ""}</p>}
+    </div>
+  );
+}
+
 export const TOOL_COMPONENTS: Record<string, () => React.ReactNode> = {
   "numeros-a-letras": NumerosALetras,
   "letra-dni": LetraDni,
@@ -530,9 +787,33 @@ export const TOOL_COMPONENTS: Record<string, () => React.ReactNode> = {
   "convertir-mayusculas-minusculas": Mayusculas,
   "numeros-romanos": Romanos,
   "generador-contrasenas": Contrasenas,
+  "calculadora-imc": Imc,
+  "fecha-probable-de-parto": Embarazo,
+  "mcd-mcm": McdMcm,
+  "calculadora-descuentos": Descuentos,
+  "coste-viaje-gasolina": Viaje,
+  "conversor-unidades": Conversor,
+  "semana-del-ano": SemanaAno,
+  "numero-aleatorio": Aleatorio,
+  "cuenta-atras": CuentaAtras,
 };
 
-const noop = () => () => {};
+/** Botons per compartir l'eina: el trànsit que porten els usuaris és gratis. */
+export function ShareBar({ title, url }: { title: string; url: string }) {
+  const mounted = useSyncExternalStore(noop, () => true, () => false);
+  const [ok, setOk] = useState(false);
+  const canShare = mounted && typeof navigator.share === "function";
+  return (
+    <div className="flex flex-wrap items-center gap-2 text-sm">
+      <span className="text-stone-500">Compartir:</span>
+      <a className="btn-ghost py-1.5" href={`https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      <button type="button" className="btn-ghost py-1.5" onClick={async () => { await navigator.clipboard.writeText(url); setOk(true); setTimeout(() => setOk(false), 1200); }}>
+        {ok ? "¡Enlace copiado!" : "Copiar enlace"}
+      </button>
+      {canShare && <button type="button" className="btn-ghost py-1.5" onClick={() => navigator.share({ title, url }).catch(() => {})}>Más…</button>}
+    </div>
+  );
+}
 
 /** Les eines es pinten només al navegador: així «avui» és la data real del visitant, no la del dia de compilació. */
 export function ToolWidget({ slug }: { slug: string }) {
