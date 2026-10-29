@@ -1,14 +1,17 @@
-# demana-hora 
+# CalculaYa
 
-**demana-hora** és una solució robusta de gestió de cites i serveis desenvolupada en **PHP Vanilla**. Aquest projecte neix de la voluntat de crear una eina de proximitat, eficient i programada seguint els estàndards més alts d'arquitectura de software (MVC).
+Calculadoras y herramientas gratis en español, monetizadas con Google AdSense.
+Web 100 % estática (Next.js `output: "export"`): se aloja gratis y no tiene servidor ni base de datos.
 
-## Objectiu del Projecte
-Demostrar la viabilitat de sistemes professionals sense dependències de tercers, posant el focus en la seguretat, la neteja del codi i una experiència d'usuari fluida en català.
+- `src/tools/logic.ts`: la lógica de cada herramienta (probada).
+- `src/tools/registry.ts`: nombre, textos SEO y preguntas frecuentes de cada herramienta. **Añadir una herramienta** = una entrada aquí + un componente en `src/tools/components.tsx`.
+- `src/lib/site.ts`: marca, dominio y AdSense (todo por variables de entorno, ver `.env.example`).
 
-## Especificacions Tècniques
-- **Lògica:** PHP 8.x amb arquitectura MVC pura.
-- **Dades:** MySQL amb el motor InnoDB per a integritat referencial.
-- **Seguretat:** Sessions protegides, hashing de seguretat i defensa contra SQLi/XSS.
+```bash
+npm install
+npm run dev
+# Publicar en GitHub Pages (subcarpeta /demana-hora):
+NEXT_PUBLIC_SITE_URL=https://ivanballespi.github.io/demana-hora NEXT_PUBLIC_BASE_PATH=/demana-hora npm run build
+```
 
----
-*Projecte per al portfolio de desenvolupament professional.*
+Guía para cobrar con anuncios: [docs/ADSENSE.md](docs/ADSENSE.md).
