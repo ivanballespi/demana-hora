@@ -1,4 +1,4 @@
-:HL["/_next/static/chunks/0mzrswjmwopry.css","style"]
+:HL["/_next/static/chunks/37lf8eymwnkfx.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
-1:[["children",{"s":{"n":"tool","t":"d","k":"letra-dni","s":["ads.txt","aviso-legal","privacidad"]},"h":65632,"c":"$Q2"}]]
-0:{"b":"dvJ8MhJURELmUnezmkl_n","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+1:[["children",{"s":{"n":"tool","t":"d","k":"letra-dni","s":["ads.txt","aviso-legal","categoria","contacto","cuanto-falta-para","privacidad","sobre-nosotros"]},"h":65632,"c":"$Q2"}]]
+0:{"b":"lCfMl-9D6bhZIQIPDWkLZ","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
