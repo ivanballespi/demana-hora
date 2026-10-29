@@ -1,4 +1,4 @@
-# CalculaYa
+# CalcularOnline (calcularonline.es)
 
 Calculadoras y herramientas gratis en español, monetizadas con Google AdSense.
 Web 100 % estática (Next.js `output: "export"`): se aloja gratis y no tiene servidor ni base de datos.
@@ -10,8 +10,8 @@ Web 100 % estática (Next.js `output: "export"`): se aloja gratis y no tiene ser
 ```bash
 npm install
 npm run dev
-# Publicar en GitHub Pages (subcarpeta /demana-hora):
-NEXT_PUBLIC_SITE_URL=https://ivanballespi.github.io/demana-hora NEXT_PUBLIC_BASE_PATH=/demana-hora npm run build
+npm run build   # genera out/ per a https://calcularonline.es
+# Es publica copiant out/ a la branca gh-pages (GitHub Pages, amb el domini propi via public/CNAME).
 ```
 
 Guía para cobrar con anuncios: [docs/ADSENSE.md](docs/ADSENSE.md).
