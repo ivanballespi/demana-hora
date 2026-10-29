@@ -1,4 +1,4 @@
 :HL["/_next/static/chunks/37lf8eymwnkfx.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"tool","t":"d","k":"mcd-mcm","s":["ads.txt","aviso-legal","categoria","contacto","cuanto-falta-para","privacidad","sobre-nosotros"]},"h":65632,"c":"$Q2"}]]
-0:{"b":"1Rp4QOReDUOt0hSDra3yK","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+0:{"b":"qWOJDXjWZ_u5a4UUnVEIW","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
