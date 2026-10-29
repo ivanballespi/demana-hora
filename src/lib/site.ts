@@ -11,4 +11,4 @@ export const GOOGLE_SITE_VERIFICATION =
 // Titular de la web (LSSI: aviso legal i privacitat)
 export const LEGAL_NAME = process.env.NEXT_PUBLIC_LEGAL_NAME || "Ivan Ballespi";
 export const LEGAL_NIF = process.env.NEXT_PUBLIC_LEGAL_NIF || "48253383G";
-export const LEGAL_ADDRESS = process.env.NEXT_PUBLIC_LEGAL_ADDRESS || "Carrer Castell Baix, 21";
+export const LEGAL_ADDRESS = process.env.NEXT_PUBLIC_LEGAL_ADDRESS || "Carrer Castell Baix, 21, 25400 Les Borges Blanques (Lleida)";
