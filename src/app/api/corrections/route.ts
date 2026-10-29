@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
       .from("corrections")
       .update({ result, score: Math.round(result.nota * 10) / 10, status: "done" })
       .eq("id", row.id);
+    await db.rpc("reward_referral", { p_user: user.id });
     return NextResponse.json({ id: row.id });
   } catch (e) {
     console.error(e);

@@ -32,3 +32,5 @@ npm run dev
 
 - **[DEPLOY.md](DEPLOY.md)**: guia de llançament pas a pas
 - **[docs/VENDES.md](docs/VENDES.md)**: com vendre només amb SEO, sense màrqueting
+- **[docs/GOOGLE-ADS.md](docs/GOOGLE-ADS.md)**: campanya d'anuncis de text per copiar i enganxar
+- **[docs/SOCIS.md](docs/SOCIS.md)**: descomptes per a sindicats i associacions, amb el correu redactat

@@ -35,3 +35,9 @@
 - Versions en valencià de les guies que funcionin
 
 **L'única dada que has de mirar:** a Search Console → *Rendiment*, quines cerques porten gent. Quan una cerca comenci a funcionar, fem-ne més contingut a l'entorn.
+
+## Altres canals (sense vídeos) que ja tens muntats
+
+- **Convida un amic**: cada usuari té el seu enllaç a l'historial, amb un botó de WhatsApp. Quan el convidat fa la primera correcció, tots dos en guanyen una. Funciona sol.
+- **Google Ads**: campanya escrita, amb paraules clau i anuncis, i seguiment de registres i vendes, a [GOOGLE-ADS.md](GOOGLE-ADS.md). Prova amb 50 € i decideix amb números.
+- **Sindicats i associacions**: enllaços de descompte (`apte.cat/descompte/CODI`) que s'apliquen sols, i el correu redactat, a [SOCIS.md](SOCIS.md).

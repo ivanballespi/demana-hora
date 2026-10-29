@@ -1,7 +1,9 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { appUrl } from "@/lib/env";
+import { admin } from "@/lib/supabase/admin";
 import { supabaseAuth } from "@/lib/supabase/server";
 
 export type AuthState = { error?: string; message?: string } | undefined;
@@ -14,11 +16,21 @@ export async function signUp(_: AuthState, form: FormData): Promise<AuthState> {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: `${appUrl()}/auth/callback?next=/app/nova` },
+    options: { emailRedirectTo: `${appUrl()}/auth/callback?next=/app/nova?benvinguda=1` },
   });
   if (error) return { error: translate(error.message) };
+  if (data.user) await linkReferral(data.user.id);
   if (!data.session) return { message: "T'hem enviat un correu per confirmar el compte. Obre'l i tens la primera correcció gratis!" };
-  redirect("/app/nova");
+  redirect("/app/nova?benvinguda=1");
+}
+
+async function linkReferral(userId: string) {
+  const code = (await cookies()).get("apte_ref")?.value;
+  if (!code) return;
+  const db = admin();
+  const { data: referrer } = await db.from("profiles").select("user_id").eq("ref_code", code).maybeSingle();
+  if (!referrer || referrer.user_id === userId) return;
+  await db.from("profiles").upsert({ user_id: userId, referred_by: referrer.user_id }, { onConflict: "user_id" });
 }
 
 export async function signIn(_: AuthState, form: FormData): Promise<AuthState> {

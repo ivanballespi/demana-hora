@@ -5,7 +5,7 @@ import { supabaseAuth } from "@/lib/supabase/server";
 
 export const MONTHLY_CAP = 60;
 
-export type Profile = { user_id: string; credits: number; pass_until: string | null };
+export type Profile = { user_id: string; credits: number; pass_until: string | null; ref_code: string };
 
 export async function currentUser() {
   const supabase = await supabaseAuth();

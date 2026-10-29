@@ -6,6 +6,9 @@ create table public.profiles (
   user_id uuid primary key references auth.users(id) on delete cascade,
   credits int not null default 1 check (credits >= 0),   -- 1 correcció gratis
   pass_until timestamptz,                                -- accés il·limitat fins a
+  ref_code text not null unique default substr(md5(gen_random_uuid()::text), 1, 8),
+  referred_by uuid references auth.users(id) on delete set null,
+  referral_rewarded boolean not null default false,
   created_at timestamptz not null default now()
 );
 
@@ -93,3 +96,28 @@ returns void language sql security definer set search_path = public as $$
 $$;
 revoke all on function public.refund_credit from public, anon, authenticated;
 grant execute on function public.refund_credit to service_role;
+
+-- Programa "convida un amic": quan el convidat acaba la primera correcció,
+-- tots dos guanyen una correcció. Màxim 10 recompenses per padrí.
+create or replace function public.reward_referral(p_user uuid)
+returns boolean language plpgsql security definer set search_path = public as $$
+declare
+  ref uuid;
+  rewarded int;
+begin
+  update public.profiles set referral_rewarded = true
+    where user_id = p_user and referred_by is not null and not referral_rewarded
+    returning referred_by into ref;
+  if ref is null then
+    return false;
+  end if;
+  select count(*) into rewarded from public.profiles where referred_by = ref and referral_rewarded;
+  update public.profiles set credits = credits + 1 where user_id = p_user;
+  if rewarded <= 10 then
+    update public.profiles set credits = credits + 1 where user_id = ref;
+  end if;
+  return true;
+end;
+$$;
+revoke all on function public.reward_referral from public, anon, authenticated;
+grant execute on function public.reward_referral to service_role;

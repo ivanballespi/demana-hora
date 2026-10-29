@@ -1,3 +1,4 @@
+import { ResetConsent } from "@/components/Consent";
 import { Logo } from "@/components/Logo";
 
 export const metadata = { title: "Avís legal, privacitat i condicions" };
@@ -38,8 +39,13 @@ export default function Page() {
           venem ni publiquem els teus textos. Pots demanar l&apos;accés, la rectificació, la supressió, l&apos;oposició, la limitació i
           la portabilitat a {EMAIL}, i reclamar davant l&apos;AEPD (aepd.es).
         </p>
-        <h2>5. Galetes</h2>
-        <p>Només fem servir galetes tècniques per mantenir la sessió iniciada.</p>
+        <h2 id="galetes">5. Galetes</h2>
+        <p>
+          Fem servir galetes tècniques imprescindibles per mantenir la sessió iniciada i recordar codis d&apos;invitació o de
+          descompte. Només si les acceptes, fem servir galetes de Google Ads (Google Ireland Ltd.) per mesurar si els nostres
+          anuncis porten registres i compres. No fem servir galetes per fer-te publicitat personalitzada. Pots canviar
+          d&apos;opinió quan vulguis: <ResetConsent />.
+        </p>
       </article>
     </main>
   );

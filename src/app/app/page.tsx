@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { Conversion } from "@/components/Consent";
+import { CopyLink } from "@/components/CopyLink";
 import { getProfile, hasPass, requireUser } from "@/lib/account";
+import { appUrl } from "@/lib/env";
 import { stripe } from "@/lib/stripe";
 import { admin } from "@/lib/supabase/admin";
 
@@ -12,13 +15,13 @@ export default async function Page({ searchParams }: PageProps<"/app">) {
   const user = await requireUser();
   const db = admin();
   const compra = (await searchParams).compra;
-  let justBought = false;
+  let justBought: { value: number; id: string } | null = null;
   if (typeof compra === "string" && compra.startsWith("cs_")) {
     // Tornada de Stripe: activem la compra sense esperar el webhook (idempotent).
     const s = await stripe().checkout.sessions.retrieve(compra);
     if (s.payment_status === "paid" && s.client_reference_id === user.id && s.metadata?.product) {
       await db.rpc("grant_purchase", { p_session: s.id, p_user: user.id, p_product: s.metadata.product, p_amount: s.amount_total ?? 0 });
-      justBought = true;
+      justBought = { value: (s.amount_total ?? 0) / 100, id: s.id };
     }
   }
   const profile = await getProfile(user.id);
@@ -28,11 +31,17 @@ export default async function Page({ searchParams }: PageProps<"/app">) {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(50);
+  const { count: invited } = await db
+    .from("profiles")
+    .select("user_id", { count: "exact", head: true })
+    .eq("referred_by", user.id)
+    .eq("referral_rewarded", true);
   const rows = (data ?? []) as { id: string; level: string; score: number | null; status: string; created_at: string; task: string; veredicte: string | null }[];
   const done = rows.filter((r) => r.status === "done" && r.score !== null);
 
   return (
     <div className="space-y-8">
+      {justBought && <Conversion kind="purchase" value={justBought.value} id={justBought.id} />}
       {justBought && <p className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-800">Pagament rebut, gràcies! 🙌 Ja pots corregir.</p>}
       <section className="flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -49,6 +58,15 @@ export default async function Page({ searchParams }: PageProps<"/app">) {
             Evolució: <b>{Number(done[done.length - 1].score).toLocaleString("ca-ES")}</b> → <b>{Number(done[0].score).toLocaleString("ca-ES")}</b> /40
           </div>
         )}
+      </section>
+
+      <section className="card border-brand/30 bg-brand-soft">
+        <h2 className="font-bold">🎁 Convida un company i guanyeu una correcció cadascú</h2>
+        <p className="mt-1 text-sm text-stone-700">
+          Quan faci la seva primera correcció, tots dos en rebeu una de gratis (fins a 10 amics).
+          {invited ? ` Ja n'has guanyat ${invited}.` : ""}
+        </p>
+        <div className="mt-3"><CopyLink url={`${appUrl()}/convida/${profile.ref_code}`} shareText="Mira, això et corregeix la redacció del C1 i et diu la nota sobre 40. Amb el meu enllaç tens una correcció extra gratis:" /></div>
       </section>
 
       {rows.length === 0 ? (
