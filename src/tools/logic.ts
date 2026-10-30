@@ -889,3 +889,138 @@ export function velocidadDistanciaTiempo(calcular: "velocidad" | "distancia" | "
   if (calcular === "distancia") return a * b;
   return b > 0 ? a / b : NaN;
 }
+
+/* ---------- Paro (prestación contributiva) ---------- */
+
+/** IPREM mensual 2026 (congelado desde 2023) incrementado en 1/6 por las pagas extra. */
+export const IPREM_2026 = 600;
+const IPREM_PAGAS = (IPREM_2026 * 7) / 6;
+
+/** Días de paro según los días cotizados en los últimos 6 años (art. 269 LGSS). */
+export function duracionParo(diasCotizados: number) {
+  if (diasCotizados < 360) return 0;
+  return Math.min(720, 120 + Math.floor((diasCotizados - 360) / 180) * 60);
+}
+
+/** Cuantía mensual bruta: 70 % de la base reguladora los primeros 180 días y 60 % después, con topes según hijos. */
+export function paro(baseMensual: number, hijos: number, diasCotizados: number) {
+  const minimo = (hijos > 0 ? 1.07 : 0.8) * IPREM_PAGAS;
+  const maximo = (hijos >= 2 ? 2.25 : hijos === 1 ? 2 : 1.75) * IPREM_PAGAS;
+  const tope = (x: number) => Math.min(maximo, Math.max(minimo, x));
+  const primeros = tope(baseMensual * 0.7);
+  const despues = tope(baseMensual * 0.6);
+  const dias = duracionParo(diasCotizados);
+  const total = (Math.min(dias, 180) * primeros + Math.max(0, dias - 180) * despues) / 30;
+  return { primeros, despues, minimo, maximo, dias, meses: dias / 30, total };
+}
+
+/* ---------- Horas extra ---------- */
+
+/** Valor de la hora ordinaria a partir del sueldo bruto anual y la jornada semanal (225 días laborables al año). */
+export function horasExtra(brutoAnual: number, horasSemana: number, recargoPct: number, horas: number) {
+  const horasAño = (horasSemana / 5) * 225;
+  const ordinaria = horasAño > 0 ? brutoAnual / horasAño : NaN;
+  const extra = ordinaria * (1 + recargoPct / 100);
+  return { horasAño, ordinaria, extra, total: extra * horas };
+}
+
+/* ---------- Días laborables ---------- */
+
+/** Fiestas nacionales comunes a todas las comunidades (sin las autonómicas ni locales). */
+export function festivosNacionales(y: number) {
+  const viernesSanto = formatoFecha(parseFecha(domingoPascua(y)) - 2 * DIA);
+  return new Map<string, string>([
+    [`${y}-01-01`, "Año Nuevo"], [`${y}-01-06`, "Reyes"], [viernesSanto, "Viernes Santo"], [`${y}-05-01`, "Día del Trabajo"],
+    [`${y}-08-15`, "Asunción"], [`${y}-10-12`, "Fiesta Nacional"], [`${y}-11-01`, "Todos los Santos"],
+    [`${y}-12-06`, "Constitución"], [`${y}-12-08`, "Inmaculada"], [`${y}-12-25`, "Navidad"],
+  ]);
+}
+
+/** Días laborables entre dos fechas, ambas incluidas. */
+export function diasLaborables(desde: string, hasta: string, opts: { sabados?: boolean; festivos?: boolean } = {}) {
+  let a = parseFecha(desde), b = parseFecha(hasta);
+  if (a > b) [a, b] = [b, a];
+  let laborables = 0, finde = 0;
+  const festivos: [string, string][] = [];
+  const cache = new Map<number, Map<string, string>>();
+  for (let t = a; t <= b; t += DIA) {
+    const d = new Date(t), wd = d.getUTCDay(), y = d.getUTCFullYear();
+    if (wd === 0 || (wd === 6 && !opts.sabados)) { finde++; continue; }
+    if (opts.festivos) {
+      if (!cache.has(y)) cache.set(y, festivosNacionales(y));
+      const nombre = cache.get(y)!.get(formatoFecha(t));
+      if (nombre) { festivos.push([formatoFecha(t), nombre]); continue; }
+    }
+    laborables++;
+  }
+  return { naturales: Math.round((b - a) / DIA) + 1, laborables, finde, festivos };
+}
+
+/* ---------- Nota de selectividad (PAU) ---------- */
+
+/** Nota de acceso (sobre 10) y de admisión (sobre 14) con dos materias ponderables. */
+export function notaPAU(bachillerato: number, faseGeneral: number, especificas: [number, number][] = []) {
+  const acceso = 0.6 * bachillerato + 0.4 * faseGeneral;
+  const aprobado = faseGeneral >= 4 && acceso >= 5;
+  const extras = especificas
+    .filter(([nota, pond]) => nota >= 5 && pond > 0)
+    .map(([nota, pond]) => nota * pond)
+    .sort((x, y) => y - x)
+    .slice(0, 2);
+  const admision = aprobado ? acceso + extras.reduce((s, x) => s + x, 0) : NaN;
+  return { acceso, aprobado, admision, extras };
+}
+
+/* ---------- Ovulación ---------- */
+
+export function ovulacion(ultimaRegla: string, ciclo: number, n = 3) {
+  const ini = parseFecha(ultimaRegla);
+  return Array.from({ length: n }, (_, i) => {
+    const regla = ini + i * ciclo * DIA;
+    const ov = regla + (ciclo - 15) * DIA; // el día 1 es el primero de la regla: ciclo de 28 → ovulación el día 14
+    return { regla: formatoFecha(regla), ovulacion: formatoFecha(ov), fertilDesde: formatoFecha(ov - 5 * DIA), fertilHasta: formatoFecha(ov + DIA), siguiente: formatoFecha(regla + ciclo * DIA) };
+  });
+}
+
+/* ---------- Frecuencia cardiaca ---------- */
+
+export function frecuenciaCardiaca(edad: number, reposo?: number) {
+  const max = Math.round(208 - 0.7 * edad); // Tanaka
+  const clasica = 220 - edad;
+  const zona = (p: number) => Math.round(reposo ? reposo + (max - reposo) * p : max * p); // Karvonen si hay reposo
+  const zonas: [string, number, number, string][] = [
+    ["Zona 1", 0.5, 0.6, "Recuperación, calentamiento"],
+    ["Zona 2", 0.6, 0.7, "Resistencia, quema de grasa"],
+    ["Zona 3", 0.7, 0.8, "Aeróbico, mejora la forma"],
+    ["Zona 4", 0.8, 0.9, "Umbral, ritmo de competición"],
+    ["Zona 5", 0.9, 1, "Máximo esfuerzo, series cortas"],
+  ];
+  return { max, clasica, zonas: zonas.map(([n, a, b, d]) => ({ nombre: n, desde: zona(a), hasta: zona(b), desc: d })) };
+}
+
+/* ---------- Agua ---------- */
+
+/** 35 ml por kg de peso + 500 ml por cada hora de ejercicio. */
+export const aguaDiaria = (pesoKg: number, horasEjercicio = 0) => (pesoKg * 35 + horasEjercicio * 500) / 1000;
+
+/* ---------- Ecuación de segundo grado ---------- */
+
+export function ecuacion2(a: number, b: number, c: number) {
+  if (a === 0) return b === 0 ? { tipo: "invalida" as const } : { tipo: "lineal" as const, x: -c / b };
+  const disc = b * b - 4 * a * c;
+  if (disc > 0) return { tipo: "dos" as const, disc, x1: (-b + Math.sqrt(disc)) / (2 * a), x2: (-b - Math.sqrt(disc)) / (2 * a) };
+  if (disc === 0) return { tipo: "doble" as const, disc, x: -b / (2 * a) };
+  return { tipo: "compleja" as const, disc, re: -b / (2 * a), im: Math.sqrt(-disc) / (2 * Math.abs(a)) };
+}
+
+/* ---------- Ciclos de sueño ---------- */
+
+/** Horas (en minutos desde medianoche) para acostarse o despertarse según ciclos de 90 min + 15 min para dormirse. */
+export function ciclosSueno(horaMin: number, modo: "despertar" | "acostarse") {
+  const norm = (m: number) => ((m % 1440) + 1440) % 1440;
+  return [6, 5, 4, 3].map((ciclos) => ({
+    ciclos,
+    horas: (ciclos * 90) / 60,
+    hora: norm(modo === "despertar" ? horaMin - 15 - ciclos * 90 : horaMin + 15 + ciclos * 90),
+  }));
+}

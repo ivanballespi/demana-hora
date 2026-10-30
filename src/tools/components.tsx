@@ -1547,6 +1547,366 @@ function GeneradorQR() {
   );
 }
 
+function Paro() {
+  const [base, setBase] = useState("1800");
+  const [dias, setDias] = useState("720");
+  const [hijos, setHijos] = useState("0");
+  const r = L.paro(parse(base), Number(hijos), parse(dias));
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Field label="Base de cotización mensual (€)" value={base} onChange={(e) => setBase(e.target.value)} inputMode="decimal" />
+        <Field label="Días cotizados (últimos 6 años)" value={dias} onChange={(e) => setDias(e.target.value)} inputMode="numeric" />
+        <label className="block"><span className="label">Hijos a cargo</span>
+          <select className="input" value={hijos} onChange={(e) => setHijos(e.target.value)}>
+            <option value="0">Sin hijos</option><option value="1">1 hijo</option><option value="2">2 o más</option>
+          </select>
+        </label>
+      </div>
+      {r.dias === 0 ? (
+        <Big>Necesitas al menos 360 días cotizados para cobrar el paro contributivo</Big>
+      ) : (
+        <>
+          <Big label="Los primeros 6 meses cobrarás (bruto)">{eur(r.primeros)}/mes</Big>
+          <div className="grid grid-cols-3 gap-3">
+            <Stat label="Desde el día 181" value={r.dias > 180 ? `${eur(r.despues)}/mes` : "—"} />
+            <Stat label="Duración" value={`${r.dias} días (${num(r.meses, 0)} meses)`} />
+            <Stat label="Total del paro" value={eur(r.total)} />
+          </div>
+          <p className="text-xs text-stone-500">Importes brutos: el SEPE descuenta la cotización a la Seguridad Social y, si procede, el IRPF. Topes 2026 con IPREM de {L.IPREM_2026} €: mínimo {eur(r.minimo)} y máximo {eur(r.maximo)} al mes.</p>
+        </>
+      )}
+    </div>
+  );
+}
+
+function HorasExtra() {
+  const [anual, setAnual] = useState("24000");
+  const [semana, setSemana] = useState("40");
+  const [recargo, setRecargo] = useState("0");
+  const [horas, setHoras] = useState("10");
+  const r = L.horasExtra(parse(anual), parse(semana), parse(recargo) || 0, parse(horas) || 0);
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Field label="Sueldo bruto anual (€)" value={anual} onChange={(e) => setAnual(e.target.value)} inputMode="decimal" />
+        <Field label="Jornada (h/semana)" value={semana} onChange={(e) => setSemana(e.target.value)} inputMode="decimal" />
+        <Field label="Recargo convenio (%)" value={recargo} onChange={(e) => setRecargo(e.target.value)} inputMode="decimal" />
+        <Field label="Horas extra" value={horas} onChange={(e) => setHoras(e.target.value)} inputMode="decimal" />
+      </div>
+      <Big label="Te deben pagar (bruto)">{eur(r.total)}</Big>
+      <div className="grid grid-cols-3 gap-3">
+        <Stat label="Hora ordinaria" value={eur(r.ordinaria)} />
+        <Stat label="Hora extra" value={eur(r.extra)} />
+        <Stat label="Horas al año" value={num(r.horasAño, 0)} />
+      </div>
+    </div>
+  );
+}
+
+function DiasLaborables() {
+  const t = today();
+  const [desde, setDesde] = useState(t);
+  const [hasta, setHasta] = useState(L.sumarDias(t, 30));
+  const [festivos, setFestivos] = useState(true);
+  const [sabados, setSabados] = useState(false);
+  const ok = desde && hasta;
+  const r = ok ? L.diasLaborables(desde, hasta, { festivos, sabados }) : null;
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Desde (incluido)" type="date" value={desde} onChange={(e) => setDesde(e.target.value)} />
+        <Field label="Hasta (incluido)" type="date" value={hasta} onChange={(e) => setHasta(e.target.value)} />
+      </div>
+      <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+        <label className="flex items-center gap-2"><input type="checkbox" checked={festivos} onChange={(e) => setFestivos(e.target.checked)} className="h-4 w-4 accent-brand" />Descontar festivos nacionales</label>
+        <label className="flex items-center gap-2"><input type="checkbox" checked={sabados} onChange={(e) => setSabados(e.target.checked)} className="h-4 w-4 accent-brand" />Los sábados son laborables</label>
+      </div>
+      {r && (
+        <>
+          <Big label="Días laborables">{r.laborables} días</Big>
+          <div className="grid grid-cols-3 gap-3">
+            <Stat label="Días naturales" value={r.naturales} />
+            <Stat label={sabados ? "Domingos" : "Fines de semana"} value={r.finde} />
+            <Stat label="Festivos" value={r.festivos.length} />
+          </div>
+          {r.festivos.length > 0 && (
+            <ul className="text-sm text-stone-600">
+              {r.festivos.map(([f, n]) => <li key={f}>• {weekday(f)}: {n}</li>)}
+            </ul>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function NotaSelectividad() {
+  const [bach, setBach] = useState("8");
+  const [general, setGeneral] = useState("7");
+  const [esp, setEsp] = useState<[string, string][]>([["8", "0.2"], ["", "0.2"]]);
+  const r = L.notaPAU(parse(bach), parse(general), esp.map(([n, p]) => [parse(n), Number(p)] as [number, number]).filter(([n]) => Number.isFinite(n)));
+  const setE = (i: number, j: 0 | 1, v: string) => setEsp(esp.map((x, k) => (k === i ? (j === 0 ? [v, x[1]] : [x[0], v]) : x)));
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Nota media de Bachillerato" value={bach} onChange={(e) => setBach(e.target.value)} inputMode="decimal" />
+        <Field label="Nota de la fase general (obligatoria)" value={general} onChange={(e) => setGeneral(e.target.value)} inputMode="decimal" />
+      </div>
+      <div className="space-y-2">
+        <span className="label">Materias que ponderan (opcional)</span>
+        {esp.map(([n, p], i) => (
+          <div key={i} className="grid grid-cols-2 gap-3">
+            <input className="input" value={n} onChange={(e) => setE(i, 0, e.target.value)} inputMode="decimal" placeholder={`Nota materia ${i + 1}`} aria-label={`Nota materia ${i + 1}`} />
+            <select className="input" value={p} onChange={(e) => setE(i, 1, e.target.value)} aria-label={`Ponderación materia ${i + 1}`}>
+              <option value="0.2">Pondera 0,2</option><option value="0.1">Pondera 0,1</option><option value="0">No pondera</option>
+            </select>
+          </div>
+        ))}
+        {esp.length < 4 && <button type="button" className="btn-ghost py-1.5" onClick={() => setEsp([...esp, ["", "0.2"]])}>+ Añadir materia</button>}
+      </div>
+      {Number.isFinite(r.acceso) && (
+        r.aprobado ? (
+          <>
+            <Big label="Nota de admisión (sobre 14)">{num(r.admision, 3)}</Big>
+            <div className="grid grid-cols-2 gap-3">
+              <Stat label="Nota de acceso (sobre 10)" value={num(r.acceso, 3)} />
+              <Stat label="Suma por ponderaciones" value={`+${num(r.admision - r.acceso, 3)}`} />
+            </div>
+          </>
+        ) : <Big label="Nota de acceso">{num(r.acceso, 3)} <span className="text-base text-stone-500">· necesitas un 4 en la fase general y un 5 de nota de acceso</span></Big>
+      )}
+    </div>
+  );
+}
+
+const fechaCorta = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString("es-ES", { day: "numeric", month: "long", timeZone: "UTC" });
+
+function Ovulacion() {
+  const [fur, setFur] = useState(today());
+  const [ciclo, setCiclo] = useState("28");
+  const c = Math.round(parse(ciclo));
+  const r = fur && c >= 20 && c <= 45 ? L.ovulacion(fur, c) : null;
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Primer día de tu última regla" type="date" value={fur} onChange={(e) => setFur(e.target.value)} />
+        <Field label="Duración del ciclo (días)" value={ciclo} onChange={(e) => setCiclo(e.target.value)} inputMode="numeric" />
+      </div>
+      {r ? (
+        <>
+          <Big label="Días más fértiles">{fechaCorta(r[0].fertilDesde)} – {fechaCorta(r[0].fertilHasta)}</Big>
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label="Ovulación estimada" value={weekday(r[0].ovulacion)} />
+            <Stat label="Próxima regla" value={weekday(r[0].siguiente)} />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead><tr className="text-left text-stone-500"><th className="py-1">Ciclo</th><th>Días fértiles</th><th>Ovulación</th></tr></thead>
+              <tbody>
+                {r.slice(1).map((x) => <tr key={x.regla} className="border-t border-stone-200"><td className="py-1.5">{fechaCorta(x.regla)}</td><td>{fechaCorta(x.fertilDesde)} – {fechaCorta(x.fertilHasta)}</td><td>{fechaCorta(x.ovulacion)}</td></tr>)}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : <Big>Introduce un ciclo de entre 20 y 45 días</Big>}
+    </div>
+  );
+}
+
+function FrecuenciaCardiaca() {
+  const [edad, setEdad] = useState("35");
+  const [reposo, setReposo] = useState("");
+  const e = parse(edad), rp = parse(reposo);
+  const r = e > 0 && e < 120 ? L.frecuenciaCardiaca(e, rp > 30 && rp < 120 ? rp : undefined) : null;
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Edad" value={edad} onChange={(ev) => setEdad(ev.target.value)} inputMode="numeric" />
+        <Field label="Pulso en reposo (opcional)" value={reposo} onChange={(ev) => setReposo(ev.target.value)} inputMode="numeric" placeholder="Ej.: 60" />
+      </div>
+      {r && (
+        <>
+          <Big label="Frecuencia cardiaca máxima">{r.max} ppm <span className="text-base text-stone-500">(fórmula clásica 220 − edad: {r.clasica})</span></Big>
+          <div className="space-y-2">
+            {r.zonas.map((z, i) => (
+              <div key={z.nombre} className="flex items-center justify-between rounded-xl border border-stone-200 bg-white p-3" style={{ borderLeft: `6px solid hsl(${140 - i * 32} 70% 45%)` }}>
+                <div><div className="font-semibold">{z.nombre}</div><div className="text-xs text-stone-500">{z.desc}</div></div>
+                <div className="font-bold tabular-nums">{z.desde}–{z.hasta} ppm</div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function AguaDiaria() {
+  const [peso, setPeso] = useState("70");
+  const [ejercicio, setEjercicio] = useState("0");
+  const l = L.aguaDiaria(parse(peso), parse(ejercicio) || 0);
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Peso (kg)" value={peso} onChange={(e) => setPeso(e.target.value)} inputMode="decimal" />
+        <Field label="Horas de ejercicio al día" value={ejercicio} onChange={(e) => setEjercicio(e.target.value)} inputMode="decimal" />
+      </div>
+      {l > 0 ? (
+        <>
+          <Big label="Agua al día (aproximado)">{num(l, 1)} litros</Big>
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label="Vasos de 250 ml" value={Math.ceil((l * 1000) / 250)} />
+            <Stat label="Botellas de 500 ml" value={Math.ceil((l * 1000) / 500)} />
+          </div>
+        </>
+      ) : <Big>Introduce tu peso</Big>}
+    </div>
+  );
+}
+
+function Ecuacion2() {
+  const [a, setA] = useState("1");
+  const [b, setB] = useState("-5");
+  const [c, setC] = useState("6");
+  const r = L.ecuacion2(parse(a), parse(b), parse(c));
+  const n = (x: number) => num(x, 6);
+  return (
+    <div className="space-y-4">
+      <p className="text-center text-lg font-semibold">{a || "a"}x² {parse(b) < 0 ? "−" : "+"} {b.replace("-", "") || "b"}x {parse(c) < 0 ? "−" : "+"} {c.replace("-", "") || "c"} = 0</p>
+      <div className="grid grid-cols-3 gap-3">
+        <Field label="a" value={a} onChange={(e) => setA(e.target.value)} inputMode="decimal" />
+        <Field label="b" value={b} onChange={(e) => setB(e.target.value)} inputMode="decimal" />
+        <Field label="c" value={c} onChange={(e) => setC(e.target.value)} inputMode="decimal" />
+      </div>
+      {[a, b, c].some((v) => !Number.isFinite(parse(v))) ? <Big>Escribe los tres coeficientes</Big>
+        : r.tipo === "invalida" ? <Big>a y b no pueden ser 0 a la vez</Big>
+        : r.tipo === "lineal" ? <Big label="Es una ecuación de primer grado">x = {n(r.x)}</Big>
+        : (
+          <>
+            <Big label="Soluciones">
+              {r.tipo === "dos" ? <>x₁ = {n(r.x1)} · x₂ = {n(r.x2)}</> : r.tipo === "doble" ? <>x = {n(r.x)} (doble)</> : <>x = {n(r.re)} ± {n(r.im)}i</>}
+            </Big>
+            <Stat label="Discriminante (b² − 4ac)" value={`${n(r.disc)} → ${r.disc > 0 ? "dos soluciones reales" : r.disc === 0 ? "una solución doble" : "sin solución real (complejas)"}`} />
+          </>
+        )}
+    </div>
+  );
+}
+
+const hhmm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+
+function CiclosSueno() {
+  const [modo, setModo] = useState<"despertar" | "acostarse">("despertar");
+  const [hora, setHora] = useState("07:00");
+  const [h, m] = hora.split(":").map(Number);
+  const r = Number.isFinite(h) && Number.isFinite(m) ? L.ciclosSueno(h * 60 + m, modo) : null;
+  return (
+    <div className="space-y-4">
+      <Tabs value={modo} onChange={(v) => { setModo(v); if (v === "acostarse") { const d = new Date(); setHora(hhmm(d.getHours() * 60 + d.getMinutes())); } else setHora("07:00"); }} options={[["despertar", "Quiero despertarme a…"], ["acostarse", "Me acuesto a…"]]} />
+      <Field label={modo === "despertar" ? "Hora de despertarte" : "Hora de acostarte"} type="time" value={hora} onChange={(e) => setHora(e.target.value)} />
+      {r && (
+        <>
+          <Big label={modo === "despertar" ? "Lo ideal es acostarte a las" : "Lo ideal es despertarte a las"}>{hhmm(r[0].hora)} <span className="text-base text-stone-500">o {hhmm(r[1].hora)}</span></Big>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {r.map((x) => <Stat key={x.ciclos} label={`${x.ciclos} ciclos · ${num(x.horas, 1)} h`} value={hhmm(x.hora)} />)}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+const reloj = (ms: number, cent = true) => {
+  const t = Math.max(0, ms), h = Math.floor(t / 3_600_000), mi = Math.floor(t / 60_000) % 60, s = Math.floor(t / 1000) % 60, c = Math.floor(t / 10) % 100;
+  return `${h ? `${h}:` : ""}${String(mi).padStart(2, "0")}:${String(s).padStart(2, "0")}${cent ? `,${String(c).padStart(2, "0")}` : ""}`;
+};
+
+function Cronometro() {
+  const [inicio, setInicio] = useState<number | null>(null);
+  const [acumulado, setAcumulado] = useState(0);
+  const [vueltas, setVueltas] = useState<number[]>([]);
+  const [ahora, setAhora] = useState(0);
+  useEffect(() => {
+    if (inicio === null) return;
+    const id = setInterval(() => setAhora(Date.now()), 31);
+    return () => clearInterval(id);
+  }, [inicio]);
+  const total = acumulado + (inicio !== null ? Math.max(0, ahora - inicio) : 0);
+  const start = () => { const n = Date.now(); setAhora(n); setInicio(n); };
+  const stop = () => { setAcumulado(acumulado + Date.now() - (inicio ?? Date.now())); setInicio(null); };
+  return (
+    <div className="space-y-4">
+      <div className="rounded-2xl bg-brand-soft p-6 text-center font-mono text-5xl font-extrabold tabular-nums sm:text-6xl">{reloj(total)}</div>
+      <div className="flex justify-center gap-2">
+        {inicio === null ? <button type="button" className="btn-primary" onClick={start}>{total ? "Continuar" : "Iniciar"}</button> : <button type="button" className="btn-dark" onClick={stop}>Parar</button>}
+        <button type="button" className="btn-ghost" disabled={inicio === null} onClick={() => setVueltas([total, ...vueltas])}>Vuelta</button>
+        <button type="button" className="btn-ghost" disabled={inicio !== null || !total} onClick={() => { setAcumulado(0); setVueltas([]); }}>Reiniciar</button>
+      </div>
+      {vueltas.length > 0 && (
+        <ol className="divide-y divide-stone-200 rounded-xl border border-stone-200 bg-white text-sm">
+          {vueltas.map((v, i) => <li key={vueltas.length - i} className="flex justify-between px-3 py-2 tabular-nums"><span>Vuelta {vueltas.length - i}</span><span className="text-stone-500">+{reloj(v - (vueltas[i + 1] ?? 0))}</span><span className="font-semibold">{reloj(v)}</span></li>)}
+        </ol>
+      )}
+    </div>
+  );
+}
+
+function pitido() {
+  try {
+    const ctx = new AudioContext();
+    [0, 0.4, 0.8].forEach((t) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.3, ctx.currentTime + t); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.3);
+      o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.3);
+    });
+  } catch {}
+}
+
+function Temporizador() {
+  const [min, setMin] = useState("5");
+  const [seg, setSeg] = useState("0");
+  const [fin, setFin] = useState<number | null>(null);
+  const [pausa, setPausa] = useState<number | null>(null);
+  const [ahora, setAhora] = useState(0);
+  const [sonado, setSonado] = useState(false);
+  useEffect(() => {
+    if (fin === null) return;
+    const id = setInterval(() => {
+      const n = Date.now();
+      setAhora(n);
+      if (n >= fin) { clearInterval(id); setFin(null); setSonado(true); pitido(); }
+    }, 100);
+    return () => clearInterval(id);
+  }, [fin]);
+  const duracion = ((parse(min) || 0) * 60 + (parse(seg) || 0)) * 1000;
+  const queda = fin !== null ? fin - ahora : pausa ?? duracion;
+  const start = () => { const n = Date.now(); setAhora(n); setSonado(false); setFin(n + (pausa ?? duracion)); setPausa(null); };
+  return (
+    <div className="space-y-4">
+      {fin === null && pausa === null && (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Minutos" value={min} onChange={(e) => setMin(e.target.value)} inputMode="numeric" />
+            <Field label="Segundos" value={seg} onChange={(e) => setSeg(e.target.value)} inputMode="numeric" />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[1, 3, 5, 10, 15, 25, 30, 60].map((m) => <button key={m} type="button" className="btn-ghost py-1.5" onClick={() => { setMin(String(m)); setSeg("0"); }}>{m} min</button>)}
+          </div>
+        </>
+      )}
+      <div className={`rounded-2xl p-6 text-center font-mono text-5xl font-extrabold tabular-nums sm:text-6xl ${sonado ? "animate-pulse bg-red-100 text-red-700" : "bg-brand-soft"}`}>{sonado ? "¡Tiempo!" : reloj(Math.ceil(queda / 1000) * 1000, false)}</div>
+      <div className="flex justify-center gap-2">
+        {fin === null ? <button type="button" className="btn-primary" disabled={duracion <= 0 && pausa === null} onClick={start}>{pausa !== null ? "Continuar" : "Iniciar"}</button>
+          : <button type="button" className="btn-dark" onClick={() => { setPausa(fin - Date.now()); setFin(null); }}>Pausa</button>}
+        <button type="button" className="btn-ghost" onClick={() => { setFin(null); setPausa(null); setSonado(false); }}>Reiniciar</button>
+      </div>
+      <p className="text-center text-xs text-stone-500">Sonará un aviso al terminar: deja el volumen activado y esta pestaña abierta.</p>
+    </div>
+  );
+}
+
 export const TOOL_COMPONENTS: Record<string, () => React.ReactNode> = {
   "numeros-a-letras": NumerosALetras,
   "letra-dni": LetraDni,
@@ -1597,6 +1957,17 @@ export const TOOL_COMPONENTS: Record<string, () => React.ReactNode> = {
   "calculadora-raiz-cuadrada": RaizPotencia,
   "velocidad-distancia-tiempo": VelocidadDistanciaTiempo,
   "generador-codigo-qr": GeneradorQR,
+  "calculadora-paro": Paro,
+  "calculadora-horas-extra": HorasExtra,
+  "dias-laborables": DiasLaborables,
+  "calculadora-nota-selectividad": NotaSelectividad,
+  "calculadora-ovulacion": Ovulacion,
+  "frecuencia-cardiaca-maxima": FrecuenciaCardiaca,
+  "cuanta-agua-beber": AguaDiaria,
+  "ecuacion-segundo-grado": Ecuacion2,
+  "calculadora-ciclos-sueno": CiclosSueno,
+  "cronometro-online": Cronometro,
+  "temporizador-online": Temporizador,
 };
 
 /** Calculadora de sou net per incrustar a les pàgines de sous concrets. */

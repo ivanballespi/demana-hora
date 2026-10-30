@@ -16,12 +16,12 @@ export const CATEGORIES: Record<Category, string> = {
 /** Pàgina de categoria: /categoria/<slug>/ */
 export const CATEGORY_INFO: Record<Category, { slug: string; icon: string; title: string; intro: string }> = {
   dinero: { slug: "finanzas", icon: "💶", title: "Calculadoras de dinero y finanzas", intro: "IVA, porcentajes, descuentos, hipoteca, préstamos, TIN y TAE, interés compuesto o lo que te costará un viaje en coche. Las cuentas de cada día, con la explicación de cada cálculo." },
-  trabajo: { slug: "trabajo", icon: "💼", title: "Calculadoras de trabajo y nómina", intro: "Calcula tu sueldo neto, el finiquito y la indemnización por despido, las vacaciones que te corresponden o las horas que has trabajado." },
-  fechas: { slug: "fechas", icon: "📅", title: "Calculadoras de fechas y tiempo", intro: "Días entre dos fechas, edad exacta, semana del año, sumar días a una fecha o cuentas atrás para las fechas más esperadas." },
-  estudios: { slug: "matematicas", icon: "🎓", title: "Calculadoras para estudiar: matemáticas", intro: "Fracciones, regla de tres, media y mediana, áreas y perímetros, nota media, MCD y mcm, números romanos o binarios. Con la explicación de cada fórmula." },
+  trabajo: { slug: "trabajo", icon: "💼", title: "Calculadoras de trabajo y nómina", intro: "Calcula tu sueldo neto, el paro que cobrarás, el finiquito y la indemnización por despido, el precio de tus horas extra, las vacaciones que te corresponden o las horas que has trabajado." },
+  fechas: { slug: "fechas", icon: "📅", title: "Calculadoras de fechas y tiempo", intro: "Días entre dos fechas, días laborables con festivos, edad exacta, semana del año, sumar días a una fecha o cuentas atrás para las fechas más esperadas." },
+  estudios: { slug: "matematicas", icon: "🎓", title: "Calculadoras para estudiar: matemáticas", intro: "Nota de selectividad, ecuaciones de segundo grado, fracciones, regla de tres, media y mediana, áreas y perímetros, nota media, MCD y mcm, números romanos o binarios. Con la explicación de cada fórmula." },
   documentos: { slug: "documentos", icon: "🪪", title: "Documentos y texto", intro: "Calcula la letra del DNI, comprueba un IBAN, pasa números a letras para facturas y cheques, cuenta palabras, cambia mayúsculas y minúsculas o analiza si un texto parece escrito con IA." },
-  salud: { slug: "salud", icon: "❤️", title: "Calculadoras de salud y deporte", intro: "Calcula tu índice de masa corporal (IMC), tu ritmo de carrera o la fecha probable de parto. Son orientativas: ante cualquier duda, consulta con un profesional sanitario." },
-  utilidades: { slug: "utilidades", icon: "🛠️", title: "Utilidades online", intro: "Genera contraseñas seguras y números aleatorios para sorteos, convierte unidades de medida o calcula la edad de tu perro o gato en años humanos." },
+  salud: { slug: "salud", icon: "❤️", title: "Calculadoras de salud y deporte", intro: "Calcula tu IMC, las calorías y el agua que necesitas, tus zonas de pulsaciones, tus días fértiles, a qué hora dormir, tu ritmo de carrera o la fecha probable de parto. Son orientativas: ante cualquier duda, consulta con un profesional sanitario." },
+  utilidades: { slug: "utilidades", icon: "🛠️", title: "Utilidades online", intro: "Cronómetro y temporizador online, códigos QR, contraseñas seguras, números aleatorios para sorteos, convierte unidades de medida o calcula la edad de tu perro o gato en años humanos." },
 };
 
 /** Adreces de categories antigues → on s'han mogut les seves eines. */
@@ -41,6 +41,9 @@ export const ICONS: Record<string, string> = {
   "calculadora-factura-autonomo": "🧾", "calculadora-margen-beneficio": "📈", "calculadora-consumo-electrico": "💡",
   "calculadora-ahorro": "🐷", "dividir-cuenta": "🍽️", "conversor-horas-minutos": "⏲️", "calculadora-calorias": "🥗",
   "calculadora-raiz-cuadrada": "√", "velocidad-distancia-tiempo": "🚗", "generador-codigo-qr": "🔳",
+  "calculadora-paro": "🧑‍💼", "calculadora-horas-extra": "⏰", "dias-laborables": "🗓", "calculadora-nota-selectividad": "📚",
+  "calculadora-ovulacion": "🌸", "frecuencia-cardiaca-maxima": "💓", "cuanta-agua-beber": "💧", "ecuacion-segundo-grado": "𝑥²",
+  "calculadora-ciclos-sueno": "😴", "cronometro-online": "⏱", "temporizador-online": "⏲",
 };
 
 /** Les que surten destacades a la portada. */
@@ -1036,6 +1039,233 @@ export const TOOLS: ToolMeta[] = [
     faq: [
       ["¿El código QR caduca?", "No. Es un QR estático: no depende de ningún servidor y funcionará mientras exista el enlace que contiene."],
       ["¿Se guarda lo que escribo?", "No. El QR se genera en tu navegador."],
+    ],
+  },
+  {
+    slug: "calculadora-paro",
+    category: "trabajo",
+    name: "Calculadora del paro",
+    title: "Calculadora del paro 2026: cuánto cobraré y durante cuánto tiempo",
+    description: "Calcula cuánto cobrarás de paro en 2026 y cuántos meses según tu base de cotización, los días cotizados y tus hijos. Con los topes mínimo y máximo del SEPE.",
+    intro: "Introduce tu base de cotización mensual (la tienes en la nómina), los días que has cotizado en los últimos 6 años y si tienes hijos a cargo. Te decimos cuánto cobrarás cada mes y durante cuánto tiempo.",
+    howTo: {
+      title: "Cómo se calcula el paro",
+      body: [
+        "La base reguladora es la media de tus bases de cotización por desempleo de los últimos 180 días trabajados (sin horas extra). Cobras el 70 % de esa base los primeros 180 días y el 60 % a partir del día 181.",
+        "El importe tiene topes que dependen del IPREM (600 € en 2026). Mínimo: 560 € al mes sin hijos y 749 € con hijos. Máximo: 1.225 € sin hijos, 1.400 € con un hijo y 1.575 € con dos o más.",
+        "La duración depende de lo que hayas cotizado en los últimos 6 años: con 360 días cotizados cobras 4 meses, y cada 180 días más suman 2 meses, hasta un máximo de 2 años con 2.160 días o más.",
+        "Las cantidades son brutas: el SEPE descuenta tu parte de la cotización a la Seguridad Social y, si toca, la retención de IRPF. El cálculo es orientativo; el importe exacto te lo da el SEPE al aprobar la prestación.",
+      ],
+    },
+    faq: [
+      ["¿Cuánto cobro de paro si cobraba 1.500 € brutos al mes?", "Si tu base de cotización era de 1.500 €, unos 1.050 € brutos al mes los primeros seis meses y 900 € después."],
+      ["¿Cuánto tiempo de paro me corresponde con 2 años cotizados?", "Con 720 días cotizados te corresponden 240 días de paro, es decir, 8 meses."],
+      ["¿Cuál es el paro máximo en 2026?", "1.225 € al mes sin hijos, 1.400 € con un hijo y 1.575 € con dos o más hijos a cargo."],
+      ["¿Qué pasa si he cotizado menos de un año?", "No tienes derecho al paro contributivo, pero puede que te corresponda un subsidio por desempleo. Consúltalo en el SEPE."],
+    ],
+  },
+  {
+    slug: "calculadora-horas-extra",
+    category: "trabajo",
+    name: "Horas extra",
+    title: "Calculadora de horas extra: cuánto se paga una hora extra",
+    description: "Calcula cuánto vale tu hora ordinaria y cuánto te deben pagar por tus horas extra según tu sueldo bruto anual, tu jornada y el recargo de tu convenio.",
+    intro: "Escribe tu sueldo bruto anual, tu jornada semanal y las horas extra que has hecho. Si tu convenio fija un recargo (por ejemplo, un 25 % o un 75 %), añádelo.",
+    howTo: {
+      title: "Cómo se calcula el precio de la hora extra",
+      body: [
+        "Primero se calcula el valor de la hora ordinaria: el sueldo bruto anual entre las horas que trabajas al año. Para una jornada de 40 horas usamos 1.800 horas anuales (225 días laborables descontando vacaciones y festivos).",
+        "Según el Estatuto de los Trabajadores (art. 35), la hora extra se paga como fije el convenio, pero nunca por debajo del valor de la hora ordinaria. También se puede compensar con descanso equivalente.",
+        "Muchos convenios añaden un recargo del 25 % al 75 %. Revisa el tuyo: si no dice nada, como mínimo te deben la hora ordinaria.",
+        "El límite legal es de 80 horas extra al año, sin contar las compensadas con descanso en los cuatro meses siguientes.",
+      ],
+    },
+    faq: [
+      ["¿Cuánto se paga una hora extra con un sueldo de 24.000 €?", "Con una jornada de 40 horas, la hora ordinaria vale unos 13,33 € brutos. Sin recargo, esa es la hora extra; con un 25 % de recargo, 16,67 €."],
+      ["¿Pueden pagarme la hora extra más barata que la normal?", "No. El Estatuto de los Trabajadores prohíbe pagar la hora extraordinaria por debajo de la ordinaria."],
+      ["¿Las horas extra cotizan?", "Sí. Cotizan a la Seguridad Social y tributan en el IRPF como el resto del salario."],
+    ],
+  },
+  {
+    slug: "dias-laborables",
+    category: "fechas",
+    name: "Días laborables",
+    title: "Calcular días laborables entre dos fechas (con festivos)",
+    description: "Cuenta los días laborables entre dos fechas descontando fines de semana y festivos nacionales de España. Ideal para plazos, vacaciones y entregas.",
+    intro: "Elige las dos fechas (ambas incluidas) y te contamos los días laborables, los fines de semana y los festivos nacionales que hay entre ellas.",
+    howTo: {
+      title: "Qué se cuenta como día laborable",
+      body: [
+        "Contamos de lunes a viernes. Si en tu trabajo el sábado es laborable, marca la casilla y solo se descontarán los domingos.",
+        "Los festivos nacionales que descontamos son los comunes a toda España: 1 y 6 de enero, Viernes Santo, 1 de mayo, 15 de agosto, 12 de octubre, 1 de noviembre y 6, 8 y 25 de diciembre.",
+        "Cada comunidad autónoma y cada municipio añade sus propios festivos (por ejemplo, Jueves Santo en muchas comunidades), y a veces traslada al lunes un festivo que cae en domingo. Réstalos aparte si te afectan.",
+        "Para plazos administrativos, recuerda que la ley 39/2015 considera inhábiles los sábados, los domingos y los festivos.",
+      ],
+    },
+    faq: [
+      ["¿Cuántos días laborables tiene 2026?", "261 días de lunes a viernes, de los que 7 festivos nacionales caen entre semana: quedan 254 antes de restar los festivos autonómicos y locales."],
+      ["¿Se cuentan el primer y el último día?", "Sí, en esta calculadora las dos fechas están incluidas."],
+    ],
+  },
+  {
+    slug: "calculadora-nota-selectividad",
+    category: "estudios",
+    name: "Nota de selectividad",
+    title: "Calculadora de nota de selectividad (PAU / EBAU) sobre 14",
+    description: "Calcula tu nota de acceso a la universidad y tu nota de admisión sobre 14 con la media de Bachillerato, la fase general y las materias que ponderan.",
+    intro: "Pon tu media de Bachillerato, la nota de la fase general y, si te examinas de materias que ponderan para tu grado, sus notas y su ponderación (0,1 o 0,2).",
+    howTo: {
+      title: "Cómo se calcula la nota de la PAU",
+      body: [
+        "Nota de acceso (sobre 10) = 60 % de la media de Bachillerato + 40 % de la nota de la fase general. Para aprobar necesitas al menos un 4 en la fase general y un 5 de nota de acceso.",
+        "Nota de admisión (sobre 14) = nota de acceso + las dos mejores materias ponderadas. Cada materia aprobada (5 o más) se multiplica por su ponderación, 0,1 o 0,2, según el grado que quieras estudiar.",
+        "Las ponderaciones cambian según la universidad y el grado. Búscalas en la web de tu universidad: una materia puede ponderar 0,2 para un grado y nada para otro.",
+        "Las materias troncales de la fase general también pueden ponderar si te interesa, y tienen validez para el curso actual y el siguiente.",
+      ],
+    },
+    faq: [
+      ["Tengo un 8 de media y un 7 en la fase general, ¿qué nota de acceso tengo?", "Un 7,6: 0,6 × 8 + 0,4 × 7."],
+      ["¿Cuál es la nota máxima de la selectividad?", "Un 14: 10 de nota de acceso más 2 puntos por cada una de las dos materias que ponderan 0,2 con un 10."],
+      ["¿Pondera una materia si saco menos de un 5?", "No. Solo cuentan las materias aprobadas con un 5 o más."],
+    ],
+  },
+  {
+    slug: "calculadora-ovulacion",
+    category: "salud",
+    name: "Días fértiles",
+    title: "Calculadora de ovulación y días fértiles",
+    description: "Calcula tus días fértiles, el día de ovulación y la fecha de tu próxima regla a partir de la última menstruación y la duración de tu ciclo.",
+    intro: "Indica el primer día de tu última regla y cuántos días suele durar tu ciclo. Te mostramos tus días más fértiles de este ciclo y de los dos siguientes.",
+    howTo: {
+      title: "Cómo se calcula la ovulación",
+      body: [
+        "La ovulación suele producirse unos 14 días antes de la siguiente regla. En un ciclo de 28 días, el día 14; en uno de 32, el día 18.",
+        "Los días fértiles son los 5 anteriores a la ovulación y el día siguiente, porque los espermatozoides pueden sobrevivir varios días.",
+        "Es una estimación basada en ciclos regulares. El estrés, la lactancia o los ciclos irregulares la alteran. No es un método anticonceptivo fiable: consulta con tu ginecólogo o tu matrona.",
+      ],
+    },
+    faq: [
+      ["¿Qué días son fértiles con un ciclo de 28 días?", "Del día 9 al día 15 del ciclo, contando como día 1 el primer día de la regla. La ovulación sería el día 14."],
+      ["¿Se puede ovular con un ciclo irregular?", "Sí, pero es más difícil predecirlo. En ese caso los test de ovulación o la temperatura basal son más fiables que el calendario."],
+    ],
+  },
+  {
+    slug: "frecuencia-cardiaca-maxima",
+    category: "salud",
+    name: "Frecuencia cardiaca",
+    title: "Calculadora de frecuencia cardiaca máxima y zonas de entrenamiento",
+    description: "Calcula tu frecuencia cardiaca máxima según tu edad y tus 5 zonas de entrenamiento en pulsaciones por minuto, con el método Karvonen si conoces tu pulso en reposo.",
+    intro: "Escribe tu edad y, si la conoces, tu frecuencia cardiaca en reposo (tómala por la mañana, antes de levantarte). Te damos tus pulsaciones máximas y tus zonas de entrenamiento.",
+    howTo: {
+      title: "Cómo se calculan las zonas",
+      body: [
+        "La frecuencia cardiaca máxima la estimamos con la fórmula de Tanaka (208 − 0,7 × edad), más precisa que la clásica 220 − edad, sobre todo a partir de los 40 años.",
+        "Sin pulso en reposo, cada zona es un porcentaje de la máxima: zona 2, del 60 % al 70 %. Con pulso en reposo usamos el método Karvonen, que aplica el porcentaje a tu reserva cardiaca (máxima − reposo) y es más personalizado.",
+        "Son estimaciones: la máxima real puede variar unas 10 pulsaciones arriba o abajo. Una prueba de esfuerzo es la forma más precisa de conocerla.",
+      ],
+    },
+    faq: [
+      ["¿Cuál es la frecuencia cardiaca máxima a los 40 años?", "Unas 180 pulsaciones por minuto según Tanaka (208 − 0,7 × 40)."],
+      ["¿Qué es la zona 2?", "Entre el 60 % y el 70 % de la frecuencia máxima: un ritmo cómodo en el que puedes hablar. Es la base del entrenamiento de resistencia."],
+    ],
+  },
+  {
+    slug: "cuanta-agua-beber",
+    category: "salud",
+    name: "Agua al día",
+    title: "¿Cuánta agua debo beber al día? Calculadora por peso",
+    description: "Calcula cuántos litros de agua deberías beber al día según tu peso y el ejercicio que haces, y cuántos vasos o botellas son.",
+    intro: "Escribe tu peso y las horas de ejercicio que haces al día. Te damos una cantidad orientativa de agua y su equivalencia en vasos.",
+    howTo: {
+      title: "Cómo lo calculamos",
+      body: [
+        "Usamos una referencia muy extendida: unos 35 ml por kilo de peso al día, más medio litro por cada hora de ejercicio.",
+        "Esta cifra incluye toda el agua que tomas, no solo la que bebes: la fruta, la verdura, la sopa o la leche también cuentan.",
+        "Con calor, fiebre, embarazo o lactancia necesitas más. Si tienes problemas renales o cardiacos, sigue lo que te indique tu médico.",
+      ],
+    },
+    faq: [
+      ["¿Cuánta agua debe beber una persona de 70 kg?", "Unos 2,5 litros al día, unos 10 vasos, contando también el agua de los alimentos."],
+      ["¿Es malo beber demasiada agua?", "En personas sanas es difícil, pero beber muchísima en poco tiempo puede bajar el sodio en sangre. Lo mejor es repartirla a lo largo del día."],
+    ],
+  },
+  {
+    slug: "ecuacion-segundo-grado",
+    category: "estudios",
+    name: "Ecuaciones de 2º grado",
+    title: "Calculadora de ecuaciones de segundo grado (ax² + bx + c = 0)",
+    description: "Resuelve ecuaciones de segundo grado al instante: introduce a, b y c y obtén las soluciones, el discriminante y si las raíces son reales o complejas.",
+    intro: "Escribe los coeficientes a, b y c de tu ecuación ax² + bx + c = 0. Si algún término no aparece, su coeficiente es 0.",
+    howTo: {
+      title: "La fórmula",
+      body: [
+        "Las soluciones son x = (−b ± √(b² − 4ac)) / 2a.",
+        "El discriminante, b² − 4ac, dice cuántas soluciones hay: si es positivo, dos soluciones reales; si es 0, una solución doble; si es negativo, ninguna real (dos complejas conjugadas).",
+        "Ejemplo: x² − 5x + 6 = 0 tiene a = 1, b = −5 y c = 6. El discriminante es 25 − 24 = 1, así que x = (5 ± 1) / 2: x₁ = 3 y x₂ = 2.",
+      ],
+    },
+    faq: [
+      ["¿Qué pasa si a = 0?", "Ya no es de segundo grado sino de primer grado (bx + c = 0), y su solución es x = −c / b."],
+      ["¿Cómo resuelvo x² − 9 = 0?", "Con a = 1, b = 0 y c = −9: x = 3 y x = −3."],
+    ],
+  },
+  {
+    slug: "calculadora-ciclos-sueno",
+    category: "salud",
+    name: "Ciclos de sueño",
+    title: "Calculadora de sueño: a qué hora acostarte para despertar descansado",
+    description: "Calcula a qué hora debes acostarte o despertarte para completar ciclos de sueño de 90 minutos y no levantarte a mitad de un ciclo.",
+    intro: "Dinos a qué hora te quieres despertar y te decimos a qué hora acostarte, o al revés. Contamos unos 15 minutos para quedarte dormido.",
+    howTo: {
+      title: "Por qué ciclos de 90 minutos",
+      body: [
+        "Mientras dormimos pasamos por ciclos de unos 90 minutos con fases de sueño ligero, profundo y REM. Despertarse al final de un ciclo suele resultar menos pesado que hacerlo en pleno sueño profundo.",
+        "Lo recomendable para un adulto son entre 7 y 9 horas, es decir, 5 o 6 ciclos completos.",
+        "La duración de los ciclos varía entre personas (de 80 a 120 minutos), así que tómalo como orientación y ajusta según cómo te despiertes.",
+      ],
+    },
+    faq: [
+      ["Si me despierto a las 7:00, ¿a qué hora me acuesto?", "A las 21:45 para dormir 6 ciclos (9 horas) o a las 23:15 para dormir 5 (7 horas y media)."],
+      ["¿Cuántas horas tengo que dormir?", "Los adultos necesitan entre 7 y 9 horas; los adolescentes, entre 8 y 10."],
+    ],
+  },
+  {
+    slug: "cronometro-online",
+    category: "utilidades",
+    name: "Cronómetro",
+    title: "Cronómetro online gratis con vueltas",
+    description: "Cronómetro online con centésimas y vueltas parciales. Gratis, sin instalar nada y funciona en el móvil. Ideal para deporte, estudio o cocina.",
+    intro: "Pulsa «Iniciar» para empezar a contar. Puedes marcar vueltas sin parar el cronómetro y ver el tiempo de cada una.",
+    howTo: {
+      title: "Cómo usarlo",
+      body: [
+        "«Iniciar» pone en marcha el cronómetro y «Parar» lo detiene; puedes continuar después desde el mismo punto.",
+        "«Vuelta» guarda el tiempo total en ese momento y el parcial desde la vuelta anterior, sin detener el cronómetro.",
+        "El tiempo se calcula con el reloj del dispositivo, así que es preciso aunque cambies de pestaña un rato.",
+      ],
+    },
+    faq: [
+      ["¿Sigue contando si cambio de pestaña?", "Sí. Al volver verás el tiempo correcto."],
+    ],
+  },
+  {
+    slug: "temporizador-online",
+    category: "utilidades",
+    name: "Temporizador",
+    title: "Temporizador online con alarma (cuenta atrás en minutos)",
+    description: "Temporizador online gratis con alarma sonora: pon los minutos y segundos y te avisa al terminar. Atajos de 1, 5, 10, 25 minutos y más.",
+    intro: "Elige los minutos o pulsa uno de los atajos y dale a «Iniciar». Cuando llegue a cero sonará un aviso.",
+    howTo: {
+      title: "Cómo usarlo",
+      body: [
+        "Escribe los minutos y los segundos o usa los botones rápidos. Puedes pausarlo y continuar cuando quieras.",
+        "Para que suene la alarma, mantén el volumen activado y no cierres la pestaña. Algunos móviles silencian el sonido si la pantalla se apaga.",
+        "El botón de 25 minutos sirve para la técnica Pomodoro: 25 minutos de trabajo concentrado y 5 de descanso.",
+      ],
+    },
+    faq: [
+      ["¿Funciona en el móvil?", "Sí. Mantén la pantalla encendida para asegurarte de oír el aviso."],
+      ["¿Qué es la técnica Pomodoro?", "Un método de estudio y trabajo: bloques de 25 minutos de concentración seguidos de 5 minutos de descanso."],
     ],
   },
 ];
