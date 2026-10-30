@@ -1,5 +1,5 @@
-:HL["/_next/static/chunks/15pi1c5o-8q2b.css","style"]
+:HL["/_next/static/chunks/16bv6penmkjay.css","style"]
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"evento","t":"d","k":"nochevieja","s":[]},"h":65632,"c":"$Q3"}]]
 1:[["children",{"s":"cuanto-falta-para","h":131168,"c":"$Q2"}]]
-0:{"b":"daOycaTixK-KQg0jjnYSP","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+0:{"b":"S3QYP_i_5iGkIzzLXnV2V","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
